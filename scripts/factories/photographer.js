@@ -8,7 +8,7 @@ function photographerFactory(data) {
   function getUserCardDOM() {
     // créer une zone focusable contenant le h2 et l'image:
     // => fonction getUserCardDOM creates an element <a>: contains article (image, h2 & the p(s))
-    
+
     const link = document.createElement("a");
     link.href = `photographer.html?id=${id}`;
     // ulisiser l'id dans le lien

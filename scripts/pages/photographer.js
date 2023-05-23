@@ -27,4 +27,19 @@ async function displayPagePhotographer(photographer) {
   photographerPageHeader.appendChild(userCardDOM);
 }
 
+// css the elements DOM
+const photographerElement = document.createElement("article");
+photographerElement.classList.add("img");
+photographerPageHeader.appendChild(photographerElement);
 
+// add media
+const photographerMedia = media.filter((item) => item.photographerId == id);
+const mediaContainer = document.createElement("media-container");
+photographerMedia.forEach((item) => {
+  const mediaElement = document.createElement("div");
+
+  const imageElement = document.createElement("imgProduct");
+  imageElement.src = `assets/photographers/\${photographer}${item.image}`;
+  mediaElement.appendChild(imageElement);
+  mediaContainer.appendChild(mediaElement);
+});
