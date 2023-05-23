@@ -6,7 +6,27 @@
     background-color: #FAFAFA;
     height: 300px;
     margin: 0 100px;
+    /* display: flex;
+    flex-direction: row; */
 }
+
+.photographer_header article {
+    /* justify-self: center; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.photographer_header a article img {
+    width: 200px;
+    height: 200px;
+    /* aspect-ratio : 1 / 1; */
+    clip-path: circle(30% at 50% 50%);
+    object-fit:contain;
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+    
+} 
 
 .contact_button {
     font-size: 20px;

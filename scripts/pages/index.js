@@ -1,22 +1,18 @@
 import photographerFactory from "../factories/photographer.js";
+import { getAllPhotographers } from "./api.js";
+export default displayData;
 
 // 1- Ajouter fetch dans la fonction getPhotographers pour récupérer vos datas, et faire un console.log de ces datas
+// => import de `api.js``
+
 // 2- Retourner les datas
 // 3- Modifier `scripts/factories/Photographer.js` pour récupérer les données nécessaires (id, tagline, city, etc.)
 
 // Functions:
 
-const photographersApi = "../../data/photographers.json";
-
-async function getPhotographers() {
-  const response = await fetch(photographersApi);
-  const data = await response.json();
-  const photographers = data.photographers;
-  return photographers;
-}
-async function displayData(photographers) {
+async function displayData(allPhotographers) {
   const photographersSection = document.querySelector(".photographer_section");
-  photographers.forEach((photographer) => {
+  allPhotographers.forEach((photographer) => {
     const photographerModel = photographerFactory(photographer);
     const userCardDOM = photographerModel.getUserCardDOM();
     photographersSection.appendChild(userCardDOM);
@@ -25,14 +21,11 @@ async function displayData(photographers) {
 
 async function init() {
   // Récupère les datas des photographes
-
-  const photographers = await getPhotographers();
-  displayData(photographers);
+  const allPhotographers = await getAllPhotographers();
+  displayData(allPhotographers);
 }
 
 init();
-
-
 
 // const photographerCard = photographers.map(function (photographer) {
 //   return `

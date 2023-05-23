@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
   <head>
     <link href="css/style.css" rel="stylesheet" type="text/css" />
     <meta charset="utf-8" />
@@ -28,7 +28,11 @@
       <div class="modal">
         <header>
           <h2>Contactez-moi</h2>
-          <img src="assets/icons/close.svg" onclick="closeModal()" />
+          <img
+            src="assets/icons/close.svg"
+            onclick="closeModal()"
+            alt="photo de photographer"
+          />
         </header>
         <form>
           <div>
@@ -41,5 +45,21 @@
     </div>
     <script type="module" src="./scripts/pages/photographer.js"></script>
     <script type="module" src="./scripts/utils/contactForm.js"></script>
+    <script type="module" src="./scripts/pages/api.js"></script>
+    <script type="module">
+      import { getPhotographerIdFromUrl } from "./scripts/pages/photographer.js";
+
+      function setPhotographerIdInUrl(id) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set("id", id);
+        const newUrl = window.location.pathname + "?" + urlParams.toString();
+        window.history.replaceState({}, "", newUrl);
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const photographerId = getPhotographerIdFromUrl();
+        setPhotographerIdInUrl(photographerId);
+      });
+    </script>
   </body>
 </html>
