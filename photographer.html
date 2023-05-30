@@ -19,9 +19,14 @@
     </header>
     <main id="main">
       <div class="photograph-header">
-        <button class="contact_button" onclick="displayModal()">
+        <!-- <button class="contact_button" onclick="displayModal()">
           Contactez-moi
-        </button>
+        </button> -->
+      </div>
+      <div id="photographer-media">
+        <div id="carousel">
+          
+        </div>
       </div>
     </main>
     <div id="contact_modal">
@@ -29,8 +34,8 @@
         <header>
           <h2>Contactez-moi</h2>
           <img
+            class="close-modal"
             src="assets/icons/close.svg"
-            onclick="closeModal()"
             alt="photo de photographer"
           />
         </header>
@@ -43,9 +48,11 @@
         </form>
       </div>
     </div>
-    <script type="module" src="./scripts/pages/photographer.js"></script>
+
     <script type="module" src="./scripts/utils/contactForm.js"></script>
-    <script type="module" src="./scripts/pages/api.js"></script>
+    <script type="module" src="./scripts/factories/photographer.js"></script>
+    <script type="module" src="./scripts/pages/photographer.js"></script>
+
     <script type="module">
       import { getPhotographerIdFromUrl } from "./scripts/pages/photographer.js";
 

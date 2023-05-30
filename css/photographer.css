@@ -10,17 +10,10 @@
   margin: 0 100px;
   display: flex;
   flex-direction: row;
+  gap: 1em;
 }
 
-.photograph_header article {
-  /* justify-self: center; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
-
-.photograph_header article img {
+.photograph-header img {
   width: 100%;
   aspect-ratio: 1 / 1;
   clip-path: circle(30% at 50% 50%);

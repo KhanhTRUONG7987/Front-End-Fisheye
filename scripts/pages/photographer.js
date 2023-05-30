@@ -3,9 +3,15 @@
 // 1. récupérer l'id du photographe dans la page `photographer.html`
 // à partir des parametrès d'Url de la page
 import photographerFactory from "../factories/photographer.js";
-import { getPhotographerById, getAllPhotographers } from "./api.js";
-export { displayPagePhotographer };
+import {
+  getPhotographerById,
+  getMediaByPhotographerId,
+  getAllMedia,
+  getMediaFilePath,
+} from "./api.js";
+import closeModal from "../utils/contactForm.js";
 
+// get the photographer ID from the query parameter
 export function getPhotographerIdFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
   const photographerId = urlParams.get("id");
@@ -14,16 +20,63 @@ export function getPhotographerIdFromUrl() {
 
 document.addEventListener("DOMContentLoaded", async function () {
   const photographerId = getPhotographerIdFromUrl();
-  const photographer = await getPhotographerById(photographerId);
-  console.log("photographerFromGetById :>> ", photographer);
-  displayPagePhotographer(photographer);
+  const photographerData = await getPhotographerById(photographerId);
+  console.log("photographerFromGetById :>> ", photographerData);
+  displayPagePhotographer(photographerData);
+  document.querySelector(".close-modal").addEventListener("click", closeModal);
 });
 
-async function displayPagePhotographer(photographer) {
+async function displayPagePhotographer(photographerData) {
   const photographerPageHeader = document.querySelector(".photograph-header");
-  const photographerModel = photographerFactory(photographer);
-  console.log("photographerFromfactory :>> ", photographer);
-  const userCardDOM = photographerModel.getUserCardDOM();
-  photographerPageHeader.appendChild(userCardDOM);
+  const photographerModel = photographerFactory(photographerData);
+  console.log("photographerFromfactory :>> ", photographerModel);
+  const photographerPageHeaderDOM =
+    photographerModel.getPhotographerPageHeaderDOM();
+  photographerPageHeader.appendChild(photographerPageHeaderDOM);
+
+  // const photographerMedia = photographerModel.getPhotographerMedia();
+  const photographerMediaContainer = document.getElementById(
+    "photographer-media"
+  );
+  console.log("photographerMediaContainer:", photographerMediaContainer);
+  const photographerMedia = await getMediaByPhotographerId(
+    photographerData.id
+  );
+  console.log("photographerMedia :>> ", photographerMedia);
+
+  if (photographerMedia && photographerMedia.length > 0) {
+    for (const media of photographerMedia) {
+      const mediaElement = document.createElement("div");
+      mediaElement.className = "lightbox-modal";
+
+      if (media.type === "image") {
+        const imageElement = document.createElement("img");
+        imageElement.src = await getMediaFilePath(media);
+        // imageElement.src = `assets/photographers/${(photographerData.name).replace(' ', '-')}/${media.image}`;
+        console.log("imageElement:", imageElement);
+        mediaElement.appendChild(imageElement);
+      } else if (media.type === "video") {
+        const videoElement = document.createElement("video");
+        videoElement.src = await getMediaFilePath(media);
+        // videoElement.src = `assets/photographers/${(photographerData.name).replace(' ', '-')}/${media.video}`;
+        videoElement.alt = media.title;
+        videoElement.controls = true;
+        console.log("videoElement:", videoElement);
+        mediaElement.appendChild(videoElement);
+      }
+
+      photographerMediaContainer.appendChild(mediaElement);
+      console.log(
+        "photographerMediaContainer :>> ",
+        photographerMediaContainer
+      );
+    }
+  }
+  console.log("media:", photographerMedia);
 }
 
+function createCarousel(images) {
+  
+}
+
+export { displayPagePhotographer };

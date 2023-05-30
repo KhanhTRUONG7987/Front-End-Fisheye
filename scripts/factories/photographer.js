@@ -1,4 +1,4 @@
-export default photographerFactory;
+import { displayModal, closeModal } from "../utils/contactForm.js";
 
 function photographerFactory(data) {
   const { name, portrait, city, country, tagline, price, id } = data;
@@ -21,11 +21,11 @@ function photographerFactory(data) {
 
     const h2 = document.createElement("h2");
     h2.textContent = name;
-    const p1 = document.createElement("p1");
+    const p1 = document.createElement("p");
     p1.innerHTML = `${city}, ${country}`;
-    const p2 = document.createElement("p2");
+    const p2 = document.createElement("p");
     p2.innerHTML = `${tagline}`;
-    const p3 = document.createElement("p3");
+    const p3 = document.createElement("p");
     p3.innerHTML = `${price}€/jour`;
 
     article.appendChild(img);
@@ -39,13 +39,50 @@ function photographerFactory(data) {
     return link;
     // return article;
   }
-  return { name, picture, getUserCardDOM };
+
+  function getPhotographerPageHeaderDOM() {
+    const photographerPageHeader = document.createElement("div");
+    photographerPageHeader.className = "photograph-header";
+
+    const h2 = document.createElement("h2");
+    h2.textContent = name;
+    const p1 = document.createElement("p");
+    p1.innerHTML = `${city}, ${country}`;
+    const p2 = document.createElement("p");
+    p2.innerHTML = `${tagline}`;
+
+    const contactButton = document.createElement("button");
+    contactButton.className = "contact-button";
+    contactButton.textContent = "Contactez-moi";
+    contactButton.addEventListener("click", displayModal);
+
+    const img = document.createElement("img");
+    img.src = picture;
+    img.alt = " " + name;
+
+    photographerPageHeader.appendChild(h2);
+    photographerPageHeader.appendChild(p1);
+    photographerPageHeader.appendChild(p2);
+    photographerPageHeader.appendChild(contactButton);
+    photographerPageHeader.appendChild(img);
+
+    return photographerPageHeader;
+  }
+
+  return {
+    name,
+    picture,
+    getUserCardDOM,
+    getPhotographerPageHeaderDOM,
+  };
+
+  // const p = document.createElement("p");
+  // p.innerHTML = `<span>${city}, ${country}</span><br/>
+  //     <span>${tagline}</span><br/>
+  //     <span>${price}€/jour</span>`;
+
+  // const imageUrl = document.getElementsByTagName("img").style.backgroundImage;
+  // img.setAttribute("src", picture);
 }
 
-// const p = document.createElement("p");
-// p.innerHTML = `<span>${city}, ${country}</span><br/>
-//     <span>${tagline}</span><br/>
-//     <span>${price}€/jour</span>`;
-
-// const imageUrl = document.getElementsByTagName("img").style.backgroundImage;
-// img.setAttribute("src", picture);
+export default photographerFactory;
