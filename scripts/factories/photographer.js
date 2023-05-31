@@ -41,8 +41,7 @@ function photographerFactory(data) {
   }
 
   function getPhotographerPageHeaderDOM() {
-    const photographerPageHeader = document.createElement("div");
-    photographerPageHeader.className = "photograph-header";
+    const photographerPageHeader = document.querySelector(".photograph-header");
 
     const photographerInfo = document.createElement("article");
     photographerInfo.className = "photographer_info";
