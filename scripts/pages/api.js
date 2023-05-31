@@ -65,17 +65,17 @@ function getPhotographerNameById(photographerId) {
 async function getMediaFilePath(media) {
   const photographerName = await getPhotographerNameById(media.photographerId);
   if (!photographerName) {
-    return [];
+    return null;
   }
-
+  const firstName = photographerName.split(' ')[0];
   const fileName = media.image || media.video;
   console.log(
     "File path:",
-    `assets/photographers/${photographerName.replace(" ", "-")}/${fileName}`
+    `assets/photographers/${firstName.replace("-", " ")}/${fileName}`
   );
-  return `assets/photographers/${photographerName.replace(
-    " ",
-    "-"
+  return `assets/photographers/${firstName.replace(
+    "-",
+    " "
   )}/${fileName}`;
 }
 

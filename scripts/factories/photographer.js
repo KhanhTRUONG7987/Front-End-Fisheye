@@ -44,6 +44,8 @@ function photographerFactory(data) {
     const photographerPageHeader = document.createElement("div");
     photographerPageHeader.className = "photograph-header";
 
+    const photographerInfo = document.createElement("article");
+    photographerInfo.className = "photographer_info";
     const h2 = document.createElement("h2");
     h2.textContent = name;
     const p1 = document.createElement("p");
@@ -51,8 +53,12 @@ function photographerFactory(data) {
     const p2 = document.createElement("p");
     p2.innerHTML = `${tagline}`;
 
+    photographerInfo.appendChild(h2);
+    photographerInfo.appendChild(p1);
+    photographerInfo.appendChild(p2);
+
     const contactButton = document.createElement("button");
-    contactButton.className = "contact-button";
+    contactButton.className = "contact_button";
     contactButton.textContent = "Contactez-moi";
     contactButton.addEventListener("click", displayModal);
 
@@ -60,9 +66,7 @@ function photographerFactory(data) {
     img.src = picture;
     img.alt = " " + name;
 
-    photographerPageHeader.appendChild(h2);
-    photographerPageHeader.appendChild(p1);
-    photographerPageHeader.appendChild(p2);
+    photographerPageHeader.appendChild(photographerInfo);
     photographerPageHeader.appendChild(contactButton);
     photographerPageHeader.appendChild(img);
 

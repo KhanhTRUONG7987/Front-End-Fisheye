@@ -49,13 +49,13 @@ async function displayPagePhotographer(photographerData) {
       const mediaElement = document.createElement("div");
       mediaElement.className = "lightbox-modal";
 
-      if (media.type === "image") {
+      if (media.image) {
         const imageElement = document.createElement("img");
         imageElement.src = await getMediaFilePath(media);
         // imageElement.src = `assets/photographers/${(photographerData.name).replace(' ', '-')}/${media.image}`;
         console.log("imageElement:", imageElement);
         mediaElement.appendChild(imageElement);
-      } else if (media.type === "video") {
+      } else if (media.video) {
         const videoElement = document.createElement("video");
         videoElement.src = await getMediaFilePath(media);
         // videoElement.src = `assets/photographers/${(photographerData.name).replace(' ', '-')}/${media.video}`;
@@ -76,7 +76,7 @@ async function displayPagePhotographer(photographerData) {
 }
 
 function createCarousel(images) {
-  
+
 }
 
 export { displayPagePhotographer };
