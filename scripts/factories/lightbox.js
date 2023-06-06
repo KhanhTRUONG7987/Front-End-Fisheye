@@ -5,6 +5,7 @@ function lightboxFactory(medias) {
   // Variable to keep track of the current image index
   let currentImageIndex = 0;
   let lightboxContainer;
+  let lightboxContent = document.createElement("div");
 
   // Function to create the lightbox
   function createLightbox(mediaSources) {
@@ -48,7 +49,7 @@ function lightboxFactory(medias) {
       // Iterate through the mediaSources and create DOM elements for each media
       for (const source of mediaSources) {
         const imgElement = document.createElement("img");
-        imgElement.src = source;
+        imgElement.src = source.path;
         lightboxContent.appendChild(imgElement);
       }
     }
@@ -70,16 +71,17 @@ function lightboxFactory(medias) {
   function showPreviousImage() {
     const images = lightboxContainer.querySelectorAll("img");
     currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-    const previousImage = images[currentImageIndex].src;
-    openLightbox(previousImage);
+    const previousMediaId =
+      images[currentImageIndex].parentNode.dataset.mediaId;
+    openLightbox(previousMediaId);
   }
 
   // Function to show the next image in the lightbox
   function showNextImage() {
     const images = lightboxContainer.querySelectorAll("img");
     currentImageIndex = (currentImageIndex + 1) % images.length;
-    const nextImage = images[currentImageIndex].src;
-    openLightbox(nextImage);
+    const nextMediaId = images[currentImageIndex].parentNode.dataset.mediaId;
+    openLightbox(nextMediaId);
   }
 
   // Function to close the lightbox
@@ -98,18 +100,18 @@ function lightboxFactory(medias) {
       (element) => element.dataset.mediaId === String(mediaId)
     );
     console.log("clickedMediaIndex :>> ", clickedMediaIndex);
-  
+
     if (clickedMediaIndex >= 0) {
       const clickedMediaElement = mediaElements[clickedMediaIndex];
       const currentMediaElement = clickedMediaElement.cloneNode(true);
 
       // Remove existing content
-      while (lightboxContainer.firstChild) {
-        lightboxContainer.removeChild(lightboxContainer.firstChild);
+      while (lightboxContent.firstChild) {
+        lightboxContent.removeChild(lightboxContent.firstChild);
       }
-  
+
       // Add the current media element to the lightbox
-      lightboxContainer.appendChild(currentMediaElement);
+      lightboxContent.appendChild(currentMediaElement);
       lightboxContainer.classList.add("open");
     } else {
       console.error("Invalid mediaId");
