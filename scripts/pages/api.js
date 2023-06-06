@@ -1,8 +1,13 @@
 // Faire des fonctions génériques (api.js?) qui contiennent
 // des fonctions de type getAllPhotographers, getPhotographerById
+
+// Path to the photographers data file
 const photographersApi = "../../data/photographers.json";
+
+// Variable to store the fetched photographers data
 let allPhotographers = [];
 
+// Function to fetch all photographers' data
 async function getAllPhotographers() {
   try {
     const response = await fetch(photographersApi);
@@ -15,6 +20,7 @@ async function getAllPhotographers() {
   }
 }
 
+// Function to get a photographer by their ID
 async function getPhotographerById(id) {
   try {
     const allPhotographers = await getAllPhotographers();
@@ -30,6 +36,9 @@ async function getPhotographerById(id) {
   }
 }
 
+// ################################################################################################
+
+// Function to get media (photos or videos) associated with a photographer by their ID
 async function getMediaByPhotographerId(id) {
   try {
     const media = await getAllMedia();
@@ -41,6 +50,7 @@ async function getMediaByPhotographerId(id) {
   }
 }
 
+// Function to fetch all media data
 async function getAllMedia() {
   try {
     const response = await fetch(photographersApi);
@@ -52,6 +62,8 @@ async function getAllMedia() {
     return [];
   }
 }
+
+// ################################################################################################
 
 // get the photographer's name by ID
 function getPhotographerNameById(photographerId) {
@@ -67,17 +79,16 @@ async function getMediaFilePath(media) {
   if (!photographerName) {
     return null;
   }
-  const firstName = photographerName.split(' ')[0];
+  const firstName = photographerName.split(" ")[0];
   const fileName = media.image || media.video;
-  console.log(
-    "File path:",
-    `assets/photographers/${firstName.replace("-", " ")}/${fileName}`
-  );
-  return `assets/photographers/${firstName.replace(
+  const filePath = `assets/photographers/${firstName.replace(
     "-",
     " "
   )}/${fileName}`;
+  console.log("File path:", filePath);
+  return filePath;
 }
+// ################################################################################################
 
 export {
   getAllPhotographers,
@@ -86,6 +97,7 @@ export {
   getMediaByPhotographerId,
   getPhotographerNameById,
   getMediaFilePath,
+  allPhotographers,
 };
 
 // p === foundPhotographer

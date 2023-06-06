@@ -10,18 +10,27 @@ export default displayData;
 
 // Functions:
 
+// Function to display the photographers' data
 async function displayData(allPhotographers) {
+  // Get the photographers section element from the HTML document
   const photographersSection = document.querySelector(".photographer_section");
+
+  // Loop through each photographer in the provided data
   allPhotographers.forEach((photographer) => {
+    // Create a photographer model using the photographerFactory function
     const photographerModel = photographerFactory(photographer);
+    // Get the DOM element for the photographer's user card
     const userCardDOM = photographerModel.getUserCardDOM();
+    // Append the user card DOM element to the photographers section
     photographersSection.appendChild(userCardDOM);
   });
 }
 
+// Function to initialize the page
 async function init() {
   // Récupère les datas des photographes
   const allPhotographers = await getAllPhotographers();
+  // Display the fetched photographers' data using the displayData function
   displayData(allPhotographers);
 }
 

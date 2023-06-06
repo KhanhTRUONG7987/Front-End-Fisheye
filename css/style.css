@@ -17,17 +17,17 @@ header {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  height: 90px;
+  height: 5em;
 }
 
 h1 {
   color: #901c1c;
-  margin-right: 100px;
+  margin-right: 1em;
 }
 
 .logo {
-  height: 50px;
-  margin-left: 100px;
+  height: 2em;
+  margin-left: 3em;
 }
 
 .photographer_section {
@@ -48,25 +48,24 @@ a {
 }
 .photographer_section article h2 {
   color: #d3573c;
-  font-size: 2em;
-  margin-top: -1.5em;
+  font-size: 1.4em;
+  margin-top: -1em;
 }
-p1 {
+.photographer_section article .p1 {
   color: #901c1c;
-  font-size: 1.1em;
-  margin-top: 0.3em;
+  font-size: 1em;
 }
-p2 {
-  font-size: 0.8em;
+.photographer_section article .p2 {
+  font-size: 0.65em;
   color: black;
-  margin-top: 0.3em;
 }
-p3 {
+.photographer_section article .p3 {
   margin-top: 0.3em;
   color: #757575;
-  font-size: 0.8em;
+  font-size: 0.6em;
 }
 .photographer_section article img {
+  max-width: 25em;
   width: 100%;
   aspect-ratio: 1 / 1;
   clip-path: circle(30% at 50% 50%);

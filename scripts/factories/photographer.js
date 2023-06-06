@@ -1,10 +1,16 @@
 import { displayModal, closeModal } from "../utils/contactForm.js";
 
+// Factory function for creating a photographer object
 function photographerFactory(data) {
+
+  // Destructure properties from the provided data object
   const { name, portrait, city, country, tagline, price, id } = data;
   // console.log('data :>> ', data);
+
+  // Define the path to the photo of photographer
   const picture = `assets/photographers/PhotographersID/${portrait}`;
 
+  // Function to get the DOM element for the photographer's user card
   function getUserCardDOM() {
     // créer une zone focusable contenant le h2 et l'image:
     // => fonction getUserCardDOM creates an element <a>: contains article (image, h2 & the p(s))
@@ -22,10 +28,13 @@ function photographerFactory(data) {
     const h2 = document.createElement("h2");
     h2.textContent = name;
     const p1 = document.createElement("p");
+    p1.className = "p1";
     p1.innerHTML = `${city}, ${country}`;
     const p2 = document.createElement("p");
+    p2.className = "p2";
     p2.innerHTML = `${tagline}`;
     const p3 = document.createElement("p");
+    p3.className = "p3";
     p3.innerHTML = `${price}€/jour`;
 
     article.appendChild(img);
@@ -40,16 +49,21 @@ function photographerFactory(data) {
     // return article;
   }
 
+  // Function to get the DOM element for the photographer's page header
   function getPhotographerPageHeaderDOM() {
-    const photographerPageHeader = document.querySelector(".photograph-header");
+    const photographerPageHeaderContainer = document.createElement("div");
+    photographerPageHeaderContainer.className = "photograph_header";
+    
 
     const photographerInfo = document.createElement("article");
     photographerInfo.className = "photographer_info";
     const h2 = document.createElement("h2");
     h2.textContent = name;
     const p1 = document.createElement("p");
+    p1.className = "p1";
     p1.innerHTML = `${city}, ${country}`;
     const p2 = document.createElement("p");
+    p2.className = "p2";
     p2.innerHTML = `${tagline}`;
 
     photographerInfo.appendChild(h2);
@@ -65,13 +79,14 @@ function photographerFactory(data) {
     img.src = picture;
     img.alt = " " + name;
 
-    photographerPageHeader.appendChild(photographerInfo);
-    photographerPageHeader.appendChild(contactButton);
-    photographerPageHeader.appendChild(img);
+    photographerPageHeaderContainer.appendChild(photographerInfo);
+    photographerPageHeaderContainer.appendChild(contactButton);
+    photographerPageHeaderContainer.appendChild(img);
 
-    return photographerPageHeader;
+    return photographerPageHeaderContainer;
   }
 
+  // Return an object with the photographer's properties and functions
   return {
     name,
     picture,

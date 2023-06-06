@@ -11,24 +11,33 @@
     <link rel="stylesheet" href="./css/photographer.css" />
     <title>Fisheye - photographe</title>
   </head>
+
   <body>
     <header>
       <a href="index.html">
         <img src="assets/images/logo.png" class="logo" alt="logo"
       /></a>
     </header>
+
+    <!-- Main content section -->
     <main id="main">
-      <div class="photograph-header">
-        <!-- <button class="contact_button" onclick="displayModal()">
-          Contactez-moi
-        </button> -->
-      </div>
-      <div id="photographer-media">
-        <!-- <div id="carousel">
-          
-        </div> -->
-      </div>
+      <!-- Placeholder div for the photographer header -->
+      <!-- <div id="photograph_header"></div> -->
+      <!-- Placeholder div for the photographer media -->
+      <div id="photographer_media"></div>
     </main>
+
+    <!-- Lightbox container -->
+    <div id="lightbox" class="lightbox-container">
+      <!-- Lightbox content -->
+      <div class="lightbox-content"></div>
+      <!-- Button to close the lightbox -->
+      <button class="lightbox-close-button">
+        <img src="assets/icons/close.svg" alt="Close" />
+      </button>
+    </div>
+
+    <!-- Contact modal -->
     <div id="contact_modal">
       <div class="modal">
         <header>
@@ -49,24 +58,13 @@
       </div>
     </div>
 
+    <!-- <div class="modal-overlay" id="modal_overlay"></div> -->
+
+    <!-- Scripts for functionality -->
     <script type="module" src="./scripts/utils/contactForm.js"></script>
     <script type="module" src="./scripts/factories/photographer.js"></script>
+    <script type="module" src="./scripts/factories/lighbox.js"></script>
     <script type="module" src="./scripts/pages/photographer.js"></script>
 
-    <script type="module">
-      import { getPhotographerIdFromUrl } from "./scripts/pages/photographer.js";
-
-      function setPhotographerIdInUrl(id) {
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set("id", id);
-        const newUrl = window.location.pathname + "?" + urlParams.toString();
-        window.history.replaceState({}, "", newUrl);
-      }
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const photographerId = getPhotographerIdFromUrl();
-        setPhotographerIdInUrl(photographerId);
-      });
-    </script>
   </body>
 </html>
