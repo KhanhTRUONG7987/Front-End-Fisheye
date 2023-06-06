@@ -157,7 +157,7 @@ a {
   overflow: auto;
 }
 
-#lightbox .open {
+#lightbox.open {
   display: block !important;
   position: fixed;
   top: 0;

@@ -2,7 +2,7 @@
 
 // 1. récupérer l'id du photographe dans la page `photographer.html`
 // à partir des paramètres d'URL de la page
-import { openLightbox, createLightbox } from "../factories/lightbox.js";
+import lightboxFactory from "../factories/lightbox.js";
 import photographerFactory from "../factories/photographer.js";
 import {
   getPhotographerById,
@@ -59,15 +59,6 @@ async function displayPagePhotographer(photographerData) {
   console.log("photographerMedia :>> ", photographerMedia);
 
   if (photographerMedia && photographerMedia.length > 0) {
-    // Call the createLightbox function and pass the mediaSources as an object property
-    const lightbox = createLightbox({ mediaSources });
-    console.log("lightbox :>> ", lightbox);
-    // Find the container element where you want to append the lightbox modal
-    const container = document.querySelector("#lightbox");
-    console.log(container);
-    // Append the returned element to the container
-    container.append(lightbox);
-
     // Loop through each media item
     for (const media of photographerMedia) {
       //photographerMedia = data.media (in json file)
@@ -87,13 +78,20 @@ async function displayPagePhotographer(photographerData) {
       const likesElement = document.createElement("div");
       likesElement.className = "likesDiv";
       likesElement.textContent = `${media.likes} \u2665`;
+      // const priceElement = document.createElement("div");
+      // priceElement.className = "priceDiv";
+      // priceElement.textContent = media.price + "€";
 
       // Get the file path for the media using the getMediaFilePath function
       const filePath = await getMediaFilePath(media);
-      mediaSources.push(filePath);
-
+      mediaSources.push({
+        mediaIndex: media.id,
+        path: filePath
+      });
+      // Create a single instance of the lightbox
+      const lightbox = lightboxFactory(mediaSources);
       // Add click event listener to the media element to open the lightbox
-      mediaElement.addEventListener("click", () => openLightbox(media.id));
+      mediaElement.addEventListener("click", () => lightbox.openLightbox(media.id));
 
       if (media.image) {
         const imageElement = document.createElement("img");
@@ -112,6 +110,7 @@ async function displayPagePhotographer(photographerData) {
 
       mediaInfo.appendChild(titleElement);
       mediaInfo.appendChild(likesElement);
+      // mediaInfo.appendChild(priceElement);
 
       mediaElement.appendChild(mediaInfo);
 
@@ -121,6 +120,14 @@ async function displayPagePhotographer(photographerData) {
         photographerMediaContainer
       );
     }
+    // Call the createLightbox function and pass the mediaSources as an object property
+    const lightbox = lightboxFactory(mediaSources).createLightbox(mediaSources);
+    console.log("lightbox :>> ", lightbox);
+    // Find the container element where you want to append the lightbox modal
+    const container = document.querySelector("#lightbox-wrapper");
+    console.log(container);
+    // Append the returned element to the container
+    container.append(lightbox);
   }
   console.log("media:", photographerMedia);
 }
