@@ -69,24 +69,39 @@ function lightboxFactory(medias) {
 
   // Function to show the previous image in the lightbox
   function showPreviousImage() {
+    if (currentImageIndex === 0) {
+      return; // Don't change the media if already at the first image
+    }
     const images = lightboxContainer.querySelectorAll("img");
     currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
-    const previousMediaId =
-      images[currentImageIndex].parentNode.dataset.mediaId;
+    const previousMediaId = images[currentImageIndex].parentNode.dataset.mediaId;
     openLightbox(previousMediaId);
+    images.forEach((img, index) => {
+      img.style.display = index === currentImageIndex ? "block" : "none";
+    });
   }
 
   // Function to show the next image in the lightbox
   function showNextImage() {
     const images = lightboxContainer.querySelectorAll("img");
+    if (currentImageIndex === images.length - 1) {
+      return; // Don't change the media if already at the last image
+    }
     currentImageIndex = (currentImageIndex + 1) % images.length;
     const nextMediaId = images[currentImageIndex].parentNode.dataset.mediaId;
     openLightbox(nextMediaId);
+    images.forEach((img, index) => {
+      img.style.display = index === currentImageIndex ? "block" : "none";
+    });
   }
 
   // Function to close the lightbox
   function closeLightbox() {
     lightboxContainer.classList.remove("open");
+    // Clear existing content in lightboxContent
+    while (lightboxContent.firstChild) {
+      lightboxContent.removeChild(lightboxContent.firstChild);
+    }
   }
 
   // Function to open the lightbox
@@ -113,6 +128,7 @@ function lightboxFactory(medias) {
       // Add the current media element to the lightbox
       lightboxContent.appendChild(currentMediaElement);
       lightboxContainer.classList.add("open");
+
     } else {
       console.error("Invalid mediaId");
       return;
