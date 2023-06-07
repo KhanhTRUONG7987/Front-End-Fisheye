@@ -121,11 +121,11 @@ async function displayPagePhotographer(photographerData) {
     const lightbox = lightboxFactory(mediaSources);
 
     // Add click event listener to the media elements to open the lightbox
-    const mediaElements = document.querySelectorAll(".media_element");
+    const mediaElements = document.querySelectorAll("#photographer_media .media_element");
     mediaElements.forEach((element) => {
       element.addEventListener("click", () => {
-        const mediaId = element.getAttribute("data-media-id");
-        lightbox.openLightbox(mediaId);
+        const mediaId = element.dataset.mediaId; // Get the mediaId from the clicked element
+        lightbox.openLightbox(mediaId); // Pass the mediaId to the openLightbox function
       });
     });
 
