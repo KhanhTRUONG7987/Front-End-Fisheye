@@ -60,11 +60,15 @@ async function displayPagePhotographer(photographerData) {
 
   if (photographerMedia && photographerMedia.length > 0) {
     // Loop through each media item
-    for (const media of photographerMedia) {
+    for (let i = 0; i < photographerMedia.length; i++) {
+      const media = photographerMedia[i];
       //photographerMedia = data.media (in json file)
 
       const mediaElement = document.createElement("div");
       mediaElement.className = "media_element";
+
+      // Set media ID as a data attribute
+      mediaElement.dataset.mediaId = media.id;
 
       // Add media ID as a data attribute
       mediaElement.setAttribute("data-media-id", media.id);
@@ -82,7 +86,7 @@ async function displayPagePhotographer(photographerData) {
       // Get the file path for the media using the getMediaFilePath function
       const filePath = await getMediaFilePath(media);
       mediaSources.push({
-        mediaIndex: media.id,
+        mediaIndex: i, // index of the media element
         path: filePath,
       });
 

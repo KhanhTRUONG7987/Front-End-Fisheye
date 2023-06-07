@@ -18,23 +18,33 @@ function lightboxFactory(medias) {
     lightboxContainer.className = "lightbox-container";
 
     // Create lightbox content element
-    const lightboxContent = document.createElement("div");
+    // const lightboxContent = document.createElement("div");
+    // lightboxContent.className = "lightbox-content";
+    // lightboxContainer.appendChild(lightboxContent);
+
+
+    // Assign value to the existing lightboxContent variable
     lightboxContent.className = "lightbox-content";
     lightboxContainer.appendChild(lightboxContent);
+
+    // Create carousel container
+    const carouselContainer = document.createElement("div");
+    carouselContainer.className = "carousel-container";
+    lightboxContent.appendChild(carouselContainer);
 
     // Create previous button
     const previousButton = document.createElement("button");
     previousButton.setAttribute("role", "link");
     previousButton.textContent = "Previous image";
     previousButton.addEventListener("click", showPreviousImage);
-    lightboxContent.appendChild(previousButton);
+    carouselContainer.appendChild(previousButton);
 
     // Create next button
     const nextButton = document.createElement("button");
     nextButton.setAttribute("role", "link");
     nextButton.textContent = "Next image";
     nextButton.addEventListener("click", showNextImage);
-    lightboxContent.appendChild(nextButton);
+    carouselContainer.appendChild(nextButton);
 
     // Create close button
     const closeButton = document.createElement("button");
@@ -54,7 +64,7 @@ function lightboxFactory(medias) {
       }
     }
 
-    // Add event listeners to handle closing the lightbox
+    // Add event listener to handle closing the lightbox
     lightboxContainer.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         closeLightbox();
