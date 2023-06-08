@@ -4,12 +4,10 @@ function lightboxFactory(medias) {
   let currentImageIndex = 0;
   let lightboxContainer;
   let lightboxContent = document.createElement("div");
+  let images = [];
 
   // Function to create the lightbox
-  function createLightbox(mediaSources) {
-    // Retrieve necessary data from the provided object
-    // console.log("mediaSources: ", mediaSources);
-
+  function createLightbox() {
     // Create lightbox container element
     lightboxContainer = document.createElement("div");
     lightboxContainer.id = "lightbox";
@@ -23,7 +21,8 @@ function lightboxFactory(medias) {
     // Create previous button
     const previousButton = document.createElement("button");
     previousButton.setAttribute("role", "link");
-    previousButton.textContent = "Previous image";
+    previousButton.className = "previous";
+    previousButton.innerHTML = "&lt;";
     carouselContainer.appendChild(previousButton);
 
     previousButton.addEventListener("click", showPreviousImage);
@@ -31,7 +30,8 @@ function lightboxFactory(medias) {
     // Create next button
     const nextButton = document.createElement("button");
     nextButton.setAttribute("role", "link");
-    nextButton.textContent = "Next image";
+    nextButton.className = "next";
+    nextButton.innerHTML = "&gt;";
     carouselContainer.appendChild(nextButton);
 
     nextButton.addEventListener("click", showNextImage);
@@ -50,12 +50,21 @@ function lightboxFactory(medias) {
     // Check if mediaSources is defined and not empty
     if (mediaSources && mediaSources.length > 0) {
       // Iterate through the mediaSources and create DOM elements for each media
-      for (const source of mediaSources) {
+      mediaSources.forEach((source) => {
         const imgElement = document.createElement("img");
         imgElement.src = source.path;
         imgElement.className = "lightbox-image";
+        imgElement.dataset.mediaId = source.id; // Update the dataset attribute to data-media-id
+
+        // Create title for the image
+        const title = document.createElement("div");
+        title.className = "image-title";
+        title.innerText = source.title; // Set the title text
+        imgElement.appendChild(title); // Append the title to the image element
+
         lightboxContent.appendChild(imgElement);
-      }
+        images.push(imgElement);
+      });
     }
 
     // Add event listener to handle closing the lightbox
@@ -68,15 +77,12 @@ function lightboxFactory(medias) {
     return lightboxContainer;
   }
 
-  createLightbox(mediaSources);
-
   // Function to show the previous image in the lightbox
   function showPreviousImage() {
     console.log("showPreviousImage() called");
-    if (currentImageIndex === 0) {
-      currentImageIndex = mediaSources.length - 1;
-    } else {
-      currentImageIndex--;
+    currentImageIndex--;
+    if (currentImageIndex < 0) {
+      currentImageIndex = 0; // Set currentImageIndex to 0 to prevent going below the first media
     }
     updateCurrentImage();
   }
@@ -84,22 +90,22 @@ function lightboxFactory(medias) {
   // Function to show the next image in the lightbox
   function showNextImage() {
     console.log("showNextImage()");
-    if (currentImageIndex === mediaSources.length - 1) {
-      currentImageIndex = 0;
-    } else {
-      currentImageIndex++;
+    currentImageIndex++;
+    if (currentImageIndex >= images.length) {
+      currentImageIndex = images.length - 1; // Set currentImageIndex to the last index to prevent going beyond the last media
     }
     updateCurrentImage();
   }
 
   // Function to update the lightbox
   function updateCurrentImage() {
-    const images = lightboxContent.querySelectorAll(".lightbox-image");
     images.forEach((img, index) => {
       if (index === currentImageIndex) {
-        img.removeAttribute("hidden");
+        img.style.display = "block";
+        img.querySelector(".image-title").style.display = "block";
       } else {
-        img.setAttribute("hidden", "true");
+        img.style.display = "none";
+        img.querySelector(".image-title").style.display = "none";
       }
     });
   }
@@ -110,30 +116,42 @@ function lightboxFactory(medias) {
   }
 
   // Function to open the lightbox
-  function openLightbox(mediaId) {
-    console.log("mediaId: ", mediaId);
-    const mediaElements = document.querySelectorAll(
-      "#photographer_media .media_element"
-    );
-    console.log("mediaElements: ", mediaElements);
-    const clickedMediaIndex = Array.from(mediaElements).findIndex(
-      (element) => element.dataset.mediaId === String(mediaId)
-    );
-    console.log("clickedMediaIndex: ", clickedMediaIndex);
+  function openLightbox(mediaId, mediaElements) {
+    console.log("mediaId :>> ", mediaId);
+    console.log("mediaElements :>> ", mediaElements);
+    if (!mediaElements || mediaElements.length === 0) {
+      console.error("Invalid mediaElements");
+      return;
+    }
 
-    if (clickedMediaIndex >= 0) {
-      const clickedMediaElement = mediaElements[clickedMediaIndex];
-      const currentMediaElement = clickedMediaElement.cloneNode(true);
+    let currentMediaElement = null;
+
+    // Find the media element with the matching mediaId
+    const clickedMediaElement = Array.from(mediaElements).find((element) => {
+      return element.dataset.mediaId === mediaId;
+    });
+
+    if (clickedMediaElement) {
+      console.log("clickedMediaElement 2 :>> ", clickedMediaElement);
+      const dataIndex = Array.from(mediaElements).indexOf(clickedMediaElement);
+      console.log("dataIndex :>> ", dataIndex);
+      currentMediaElement = clickedMediaElement.cloneNode(true);
 
       // Remove existing content
       while (lightboxContent.firstChild) {
         lightboxContent.removeChild(lightboxContent.firstChild);
       }
 
+      // Add all media elements to the lightbox
+      images.forEach((img) => {
+        lightboxContent.appendChild(img);
+      });
+
       // Add the current media element to the lightbox
-      lightboxContent.appendChild(currentMediaElement);
       lightboxContainer.classList.add("open");
-      currentImageIndex = 0; // Reset the image index when opening a new lightbox
+      currentImageIndex = dataIndex; // Update the current image index
+      console.log("currentImageIndex :>> ", currentImageIndex);
+
       updateCurrentImage();
     } else {
       console.error("Invalid mediaId");
@@ -141,6 +159,7 @@ function lightboxFactory(medias) {
     }
   }
 
+  // Return the necessary functions
   return {
     createLightbox,
     openLightbox,

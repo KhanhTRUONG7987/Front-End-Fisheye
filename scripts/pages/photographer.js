@@ -62,13 +62,12 @@ async function displayPagePhotographer(photographerData) {
     // Loop through each media item
     for (let i = 0; i < photographerMedia.length; i++) {
       const media = photographerMedia[i];
-      //photographerMedia = data.media (in json file)
 
       const mediaElement = document.createElement("div");
       mediaElement.className = "media_element";
 
-      // Set media ID as a data attribute
-      mediaElement.dataset.mediaId = media.id;
+      // Set media index as a data attribute
+      mediaElement.dataset.mediaIndex = i;
 
       // Add media ID as a data attribute
       mediaElement.setAttribute("data-media-id", media.id);
@@ -121,19 +120,21 @@ async function displayPagePhotographer(photographerData) {
     const lightbox = lightboxFactory(mediaSources);
 
     // Add click event listener to the media elements to open the lightbox
-    const mediaElements = document.querySelectorAll("#photographer_media .media_element");
+    const mediaElements = document.querySelectorAll(
+      "#photographer_media .media_element"
+    );
     mediaElements.forEach((element) => {
       element.addEventListener("click", () => {
         const mediaId = element.dataset.mediaId; // Get the mediaId from the clicked element
-        lightbox.openLightbox(mediaId); // Pass the mediaId to the openLightbox function
+        lightbox.openLightbox(mediaId, mediaElements);
       });
     });
 
     // Find the container element where you want to append the lightbox modal
     const container = document.querySelector("#lightbox-wrapper");
-    console.log(container);
+
     // Append the returned element to the container
-    container.append(lightbox.createLightbox(mediaSources));
+    container.append(lightbox.createLightbox());
   }
   console.log("media:", photographerMedia);
 }
