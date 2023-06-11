@@ -42,7 +42,9 @@ async function getPhotographerById(id) {
 async function getMediaByPhotographerId(id) {
   try {
     const media = await getAllMedia();
-    const photographerMedia = media.filter((m) => m.photographerId === parseInt(id));
+    const photographerMedia = media.filter(
+      (m) => m.photographerId === parseInt(id)
+    );
     return photographerMedia;
   } catch (error) {
     console.error(error);

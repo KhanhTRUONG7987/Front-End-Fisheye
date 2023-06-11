@@ -15,7 +15,7 @@ body {
 header {
   display: flex;
   flex-direction: row;
-  justify-content:space-between;
+  justify-content: space-between;
   align-items: center;
   height: 5em;
 }
@@ -61,7 +61,7 @@ body.modal-open {
   background-color: #fafafa;
   align-items: center;
   justify-self: center;
-  justify-content:flex-start;
+  justify-content: flex-start;
   width: 100%;
   height: auto;
   margin: 0em 0em 2em 0em;
@@ -127,6 +127,16 @@ a {
   margin-right: auto;
 }
 
+#total_likes {
+  background-color: #db8876;
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 10px;
+  color: white;
+  font-size: 16px;
+}
+
 .modal-open .header_container,
 .modal-open #photographer_media {
   opacity: 0.5;
@@ -135,7 +145,7 @@ a {
 
 .modal-open #contact_modal {
   display: flex;
-} 
+}
 
 #photographer_media {
   margin: auto;
@@ -150,10 +160,11 @@ a {
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  gap: 1em
+  gap: 1em;
 }
 
-.media_element img, .media_element video {
+.media_element img,
+.media_element video {
   max-width: 25em;
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -163,7 +174,7 @@ a {
 .media_element .mediaInfo {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  justify-content:space-around;
+  justify-content: space-around;
   align-items: center;
 }
 
@@ -172,7 +183,7 @@ a {
   grid-column: 1;
 }
 
-.mediaInfo .likesDiv {
+.mediaInfo .likes {
   text-align: right;
   grid-column: 2;
 }
@@ -221,7 +232,7 @@ button.previous {
   padding: 10px;
   cursor: pointer;
   left: 2em;
-  color: #901C1C;
+  color: #901c1c;
   margin-left: 5em;
 }
 
@@ -234,7 +245,7 @@ button.next {
   padding: 10px;
   cursor: pointer;
   right: 2em;
-  color: #901C1C;
+  color: #901c1c;
   margin-right: 5em;
 }
 
@@ -242,7 +253,7 @@ button.next {
   position: absolute;
   bottom: 5em;
   left: 5em;
-  color: #901C1C;
+  color: #901c1c;
   font-size: 5em;
 }
 
@@ -254,7 +265,7 @@ button.next {
   border: none;
   cursor: pointer;
   padding: 0;
-  color: #901C1C;
+  color: #901c1c;
   font-size: 2em;
 }
 

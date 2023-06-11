@@ -2,9 +2,8 @@ import { displayModal, closeModal } from "../utils/contactForm.js";
 
 // Factory function for creating a photographer object
 function photographerFactory(data) {
-
   // Destructure properties from the provided data object
-  const { name, portrait, city, country, tagline, price, id } = data;
+  const { name, portrait, city, country, tagline, price, id, likes } = data;
   // console.log('data :>> ', data);
 
   // Define the path to the photo of photographer
@@ -53,7 +52,6 @@ function photographerFactory(data) {
   function getPhotographerPageHeaderDOM() {
     const photographerPageHeaderContainer = document.createElement("div");
     photographerPageHeaderContainer.className = "photograph_header";
-    
 
     const photographerInfo = document.createElement("article");
     photographerInfo.className = "photographer_info";
@@ -79,9 +77,14 @@ function photographerFactory(data) {
     img.src = picture;
     img.alt = " " + name;
 
+    const totalLikesElement = document.createElement("div");
+    totalLikesElement.id = "total_likes";
+    totalLikesElement.textContent = `${data.likes} \u2665`;
+
     photographerPageHeaderContainer.appendChild(photographerInfo);
     photographerPageHeaderContainer.appendChild(contactButton);
     photographerPageHeaderContainer.appendChild(img);
+    photographerPageHeaderContainer.appendChild(totalLikesElement);
 
     return photographerPageHeaderContainer;
   }
@@ -92,6 +95,7 @@ function photographerFactory(data) {
     picture,
     getUserCardDOM,
     getPhotographerPageHeaderDOM,
+    totalLikes: likes,
   };
 
   // const p = document.createElement("p");
@@ -101,6 +105,17 @@ function photographerFactory(data) {
 
   // const imageUrl = document.getElementsByTagName("img").style.backgroundImage;
   // img.setAttribute("src", picture);
+}
+
+// Create a function updateTotalLikes to update the total number of likes in the HTML
+export function updateTotalLikes(totalLikes) {
+  const totalLikesElement = document.querySelector("#total_likes");
+  if (totalLikesElement) {
+    totalLikesElement.textContent = `${totalLikes} \u2665`;
+    console.log("totalLikesElement :>> ", totalLikesElement);
+  } else {
+    console.error("Element not found: #total_likes");
+  }
 }
 
 export default photographerFactory;

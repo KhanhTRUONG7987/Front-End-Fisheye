@@ -4,6 +4,7 @@
 // à partir des paramètres d'URL de la page
 import lightboxFactory from "../factories/lightbox.js";
 import photographerFactory from "../factories/photographer.js";
+import { updateTotalLikes } from "../factories/photographer.js";
 import {
   getPhotographerById,
   getMediaByPhotographerId,
@@ -41,7 +42,8 @@ async function displayPagePhotographer(photographerData) {
   const photographerModel = photographerFactory(photographerData);
   // Get the DOM element for the photographer's page header
   const photographerPageHeaderDOM =
-    photographerModel.getPhotographerPageHeaderDOM();
+    photographerModel.getPhotographerPageHeaderDOM(photographerData);
+  updateTotalLikes(photographerData.totalLikes);
   const mainElement = document.querySelector("main");
   // Get the photographer media container element from the HTML document
   const photographerMediaContainer =
@@ -57,6 +59,18 @@ async function displayPagePhotographer(photographerData) {
   // Get the media for the photographer by ID using the getMediaByPhotographerId function
   const photographerMedia = await getMediaByPhotographerId(photographerData.id);
   console.log("photographerMedia :>> ", photographerMedia);
+
+  // Update the totalLikes property in the photographerData object
+  photographerData.totalLikes = photographerData.likes;
+
+  // Update the total likes and price per day in the #total_likes element
+  const totalLikesElement = document.getElementById("total_likes");
+  if (totalLikesElement) {
+    const pricePerDay = photographerData.price + "€/jour";
+    totalLikesElement.innerHTML = `${photographerData.totalLikes} \u2665 ${pricePerDay}`;
+  } else {
+    console.error("Element not found: #total_likes");
+  }
 
   if (photographerMedia && photographerMedia.length > 0) {
     // Loop through each media item
@@ -78,14 +92,38 @@ async function displayPagePhotographer(photographerData) {
       const titleElement = document.createElement("h3");
       titleElement.textContent = media.title;
       imageTitles.push(media.title);
-      const likesElement = document.createElement("div");
-      likesElement.className = "likesDiv";
-      likesElement.textContent = `${media.likes} \u2665`;
+
+      // Add a "like" button/ icon to each media element
+      const likeButton = document.createElement("button");
+      likeButton.className = "like_button";
+      likeButton.innerHTML = "&#x2661;"; // Use the heart symbol as the like button
+      mediaElement.appendChild(likeButton);
+
+      // Initialize the liked property of each media item to false
+      media.liked = false;
+
+      // Add an event listener to each like button to manage the liking
+      likeButton.addEventListener("click", () => {
+        // Check if the user has already liked the photo
+        if (!media.liked) {
+          media.likes++; // Increment the likes count
+          media.liked = true; // Set the liked flag to true
+          likeButton.textContent = `${media.likes} \u2665`; // Update the likes display
+
+          // Disable the like button to prevent multiple likes
+          likeButton.disabled = true;
+          likeButton.style.opacity = "1";
+
+          // Update the total number of likes in the photographerFactory
+          photographerData.totalLikes++;
+          updateTotalLikes(photographerData.totalLikes);
+        }
+      });
 
       // Get the file path for the media using the getMediaFilePath function
       const filePath = await getMediaFilePath(media);
       mediaSources.push({
-        mediaIndex: i, // index of the media element
+        mediaIndex: i, // (index of the media element)
         path: filePath,
       });
 
@@ -105,7 +143,7 @@ async function displayPagePhotographer(photographerData) {
       }
 
       mediaInfo.appendChild(titleElement);
-      mediaInfo.appendChild(likesElement);
+      mediaInfo.appendChild(likeButton);
 
       mediaElement.appendChild(mediaInfo);
 
@@ -125,12 +163,12 @@ async function displayPagePhotographer(photographerData) {
     );
     mediaElements.forEach((element) => {
       element.addEventListener("click", () => {
-        const mediaId = element.dataset.mediaId; // Get the mediaId from the clicked element
+        const mediaId = element.dataset.mediaId; // (Get the mediaId from the clicked element)
         lightbox.openLightbox(mediaId, mediaElements);
       });
     });
 
-    // Find the container element where you want to append the lightbox modal
+    // Find the container element to append the lightbox modal
     const container = document.querySelector("#lightbox-wrapper");
 
     // Append the returned element to the container
