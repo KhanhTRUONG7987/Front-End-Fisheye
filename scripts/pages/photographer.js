@@ -175,6 +175,9 @@ async function displayPagePhotographer(photographerData) {
     container.append(lightbox.createLightbox());
   }
   console.log("media:", photographerMedia);
+  
+  // Update the total likes and price per day in the #total_likes element
+  updateTotalLikes(photographerModel.totalLikes);
 }
 
 const contactButton = document.querySelector(".contact_button");
@@ -191,6 +194,26 @@ contactButton.addEventListener("click", () => {
 modalOverlay.addEventListener("click", () => {
   contactModal.classList.remove("modal-open");
   body.classList.remove("modal-open");
+});
+
+const form = document.querySelector("form");
+
+form.addEventListener("submit", (event) => {
+  // Prevent form submission
+  event.preventDefault();
+
+  // Get the input values
+  const firstName = document.getElementById("first_name").value;
+  const lastName = document.getElementById("last_name").value;
+  const email = document.getElementById("email").value;
+  const message = document.getElementById("message").value;
+
+  // Log the user input
+  console.log("User Input:");
+  console.log("First Name:", firstName);
+  console.log("Last Name:", lastName);
+  console.log("Email:", email);
+  console.log("Message:", message);
 });
 
 export { displayPagePhotographer };

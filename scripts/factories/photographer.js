@@ -79,7 +79,7 @@ function photographerFactory(data) {
 
     const totalLikesElement = document.createElement("div");
     totalLikesElement.id = "total_likes";
-    totalLikesElement.textContent = `${data.likes} \u2665`;
+    totalLikesElement.textContent = `${likes} \u2665`;
 
     photographerPageHeaderContainer.appendChild(photographerInfo);
     photographerPageHeaderContainer.appendChild(contactButton);

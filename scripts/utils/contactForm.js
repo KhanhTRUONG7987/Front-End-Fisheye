@@ -12,4 +12,4 @@ export function closeModal() {
   modal.style.display = "none";
 }
 
-export default closeModal;
+export default closeModal; 

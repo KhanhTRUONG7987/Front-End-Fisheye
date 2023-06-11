@@ -50,10 +50,22 @@
         </header>
         <form>
           <div>
-            <label>Prénom</label>
-            <input />
+            <label for="first_name">Prénom</label>
+            <input id="first_name" type="text" aria-label="First name" />
           </div>
-          <button class="contact_button">Envoyer</button>
+          <div>
+            <label for="last_name">Nom</label>
+            <input id="last_name" type="text" aria-label="Last name" />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" type="email" aria-label="Email" />
+          </div>
+          <div class="input-container">
+            <label for="message">Votre message</label>
+            <textarea id="message" aria-label="Your message"></textarea>
+          </div>
+          <button class="submit_button" type="submit">Envoyer</button>
         </form>
       </div>
     </div>
