@@ -131,7 +131,7 @@ a {
   background-color: #db8876;
   position: fixed;
   bottom: 0;
-  right: 0;
+  right: 1em;
   padding: 10px;
   color: white;
   font-size: 16px;

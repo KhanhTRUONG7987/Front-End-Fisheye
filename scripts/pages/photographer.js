@@ -4,11 +4,11 @@
 // à partir des paramètres d'URL de la page
 import lightboxFactory from "../factories/lightbox.js";
 import photographerFactory from "../factories/photographer.js";
-import { updateTotalLikes } from "../factories/photographer.js";
 import {
   getPhotographerById,
   getMediaByPhotographerId,
   getMediaFilePath,
+  calculateTotalLikesByPhotographerId,
 } from "./api.js";
 import closeModal from "../utils/contactForm.js";
 
@@ -30,6 +30,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   displayPagePhotographer(photographerData);
   // Add event listener to the close button of the modal
   document.querySelector(".close-modal").addEventListener("click", closeModal);
+  // Call the updateTotalLikes function
+  if (photographerData.media && photographerData.media.length > 0) {
+    updateTotalLikes(photographerData);
+  }
 });
 
 // Variables to store image sources, titles, and current image index for the lightbox
@@ -37,39 +41,85 @@ let mediaSources = [];
 let imageTitles = [];
 let currentImageIndex = 0;
 
+let totalLikesElement;
+
 // Function to display the photographer's page
 async function displayPagePhotographer(photographerData) {
   const photographerModel = photographerFactory(photographerData);
+
   // Get the DOM element for the photographer's page header
   const photographerPageHeaderDOM =
     photographerModel.getPhotographerPageHeaderDOM(photographerData);
-  updateTotalLikes(photographerData.totalLikes);
-  const mainElement = document.querySelector("main");
+
+  // Create the "Contactez-moi" heading element
+  const contactHeading = document.createElement("h2");
+  contactHeading.textContent = "Contactez-moi";
+
+  // Create the photographer's first name element
+  const firstNameElement = document.createElement("span");
+  firstNameElement.textContent = photographerData.name;
+
+  // Create close button element
+  // const closeButton = document.createElement("span");
+  // closeButton.textContent = `X`;
+
+  // Get the contact button element
+  const formContact = document.querySelector("#form_contact");
+
+  // Check if contactButton exists before appending the elements
+  if (contactButton) {
+    // Append the elements to the contactButton
+    formContact.insertAdjacentElement("beforebegin", contactHeading);
+    formContact.insertAdjacentElement("beforebegin", firstNameElement);
+    // formContact.insertAdjacentElement(
+    //   "beforebegin",
+    //   closeButton
+    // );
+  } else {
+    console.error("Element not found: button.contact_button");
+  }
+
+  // Create the totalLikesElement
+  totalLikesElement = document.createElement("div");
+  totalLikesElement.id = "total_likes";
+
   // Get the photographer media container element from the HTML document
   const photographerMediaContainer =
     document.getElementById("photographer_media");
-  console.log("photographerMediaContainer:", photographerMediaContainer);
 
-  // Insert the photographer page header DOM element before the photographer_media element
-  mainElement.insertBefore(
-    photographerPageHeaderDOM,
-    photographerMediaContainer
+  // Insert the photographer page header before the photographer_media element
+  photographerMediaContainer.insertAdjacentElement(
+    "beforebegin",
+    photographerPageHeaderDOM
+  );
+
+  // Insert the totalLikesElement before the photographer_media element
+  photographerMediaContainer.insertAdjacentElement(
+    "beforebegin",
+    totalLikesElement
   );
 
   // Get the media for the photographer by ID using the getMediaByPhotographerId function
   const photographerMedia = await getMediaByPhotographerId(photographerData.id);
   console.log("photographerMedia :>> ", photographerMedia);
 
-  // Update the totalLikes property in the photographerData object
-  photographerData.totalLikes = photographerData.likes;
+  // Update the totalLikesElement with the calculated total likes
+  async function updateTotalLikes(photographerData) {
+    const totalLikes = await calculateTotalLikesByPhotographerId(
+      photographerData.id
+    );
+    if (totalLikesElement) {
+      const pricePerDay = photographerData.price + "€/jour";
+      totalLikesElement.textContent = `${totalLikes} \u2665 ${pricePerDay}`;
+      console.log("totalLikesElement :>> ", totalLikesElement);
+    } else {
+      console.error("Element not found: #total_likes");
+    }
+  }
 
-  // Update the total likes and price per day in the #total_likes element
-  const totalLikesElement = document.getElementById("total_likes");
-  if (totalLikesElement) {
-    const pricePerDay = photographerData.price + "€/jour";
-    totalLikesElement.innerHTML = `${photographerData.totalLikes} \u2665 ${pricePerDay}`;
-  } else {
-    console.error("Element not found: #total_likes");
+  // Call the updateTotalLikes function with the initial number of likes
+  if (photographerData.media && photographerData.media.length > 0) {
+    updateTotalLikes(photographerData);
   }
 
   if (photographerMedia && photographerMedia.length > 0) {
@@ -104,19 +154,14 @@ async function displayPagePhotographer(photographerData) {
 
       // Add an event listener to each like button to manage the liking
       likeButton.addEventListener("click", () => {
-        // Check if the user has already liked the photo
         if (!media.liked) {
-          media.likes++; // Increment the likes count
-          media.liked = true; // Set the liked flag to true
-          likeButton.textContent = `${media.likes} \u2665`; // Update the likes display
-
-          // Disable the like button to prevent multiple likes
+          media.likes++;
+          media.liked = true;
+          likeButton.textContent = `${media.likes} \u2665`;
           likeButton.disabled = true;
           likeButton.style.opacity = "1";
 
-          // Update the total number of likes in the photographerFactory
-          photographerData.totalLikes++;
-          updateTotalLikes(photographerData.totalLikes);
+          updateTotalLikes(photographerData);
         }
       });
 
@@ -152,8 +197,17 @@ async function displayPagePhotographer(photographerData) {
         "photographerMediaContainer :>> ",
         photographerMediaContainer
       );
-    }
 
+      // Iterate over the media array and calculate the total likes for each photographer
+      const totalLikes = {};
+
+      const photographerId = media.photographerId;
+      if (totalLikes[photographerId]) {
+        totalLikes[photographerId] += media.likes;
+      } else {
+        totalLikes[photographerId] = media.likes;
+      }
+    }
     // Create the lightbox with the mediaSources
     const lightbox = lightboxFactory(mediaSources);
 
@@ -175,21 +229,23 @@ async function displayPagePhotographer(photographerData) {
     container.append(lightbox.createLightbox());
   }
   console.log("media:", photographerMedia);
-  
-  // Update the total likes and price per day in the #total_likes element
-  updateTotalLikes(photographerModel.totalLikes);
 }
 
-const contactButton = document.querySelector(".contact_button");
+const contactButton = document.querySelector(".submit_button");
 const modalOverlay = document.createElement("div");
 modalOverlay.className = "modal_overlay";
 const contactModal = document.querySelector("#contact_modal");
 const body = document.querySelector("body");
 
-contactButton.addEventListener("click", () => {
-  contactModal.classList.add("modal-open");
-  body.classList.add("modal-open");
-});
+// Check if contactButton exists before adding the event listener
+if (contactButton) {
+  contactButton.addEventListener("click", () => {
+    contactModal.classList.add("modal-open");
+    body.classList.add("modal-open");
+  });
+} else {
+  console.error("Element not found: .contact_button");
+}
 
 modalOverlay.addEventListener("click", () => {
   contactModal.classList.remove("modal-open");
@@ -214,6 +270,13 @@ form.addEventListener("submit", (event) => {
   console.log("Last Name:", lastName);
   console.log("Email:", email);
   console.log("Message:", message);
+
+  // Reset the form fields
+  form.reset();
+
+  // Hide the modal and overlay
+  contactModal.classList.remove("modal-open");
+  body.classList.remove("modal-open");
 });
 
 export { displayPagePhotographer };

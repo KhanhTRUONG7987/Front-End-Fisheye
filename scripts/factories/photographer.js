@@ -1,5 +1,7 @@
 import { displayModal, closeModal } from "../utils/contactForm.js";
 
+let totalLikesElement;
+
 // Factory function for creating a photographer object
 function photographerFactory(data) {
   // Destructure properties from the provided data object
@@ -77,7 +79,7 @@ function photographerFactory(data) {
     img.src = picture;
     img.alt = " " + name;
 
-    const totalLikesElement = document.createElement("div");
+    totalLikesElement = document.createElement("div");
     totalLikesElement.id = "total_likes";
     totalLikesElement.textContent = `${likes} \u2665`;
 
@@ -106,16 +108,4 @@ function photographerFactory(data) {
   // const imageUrl = document.getElementsByTagName("img").style.backgroundImage;
   // img.setAttribute("src", picture);
 }
-
-// Create a function updateTotalLikes to update the total number of likes in the HTML
-export function updateTotalLikes(totalLikes) {
-  const totalLikesElement = document.querySelector("#total_likes");
-  if (totalLikesElement) {
-    totalLikesElement.textContent = `${totalLikes} \u2665`;
-    console.log("totalLikesElement :>> ", totalLikesElement);
-  } else {
-    console.error("Element not found: #total_likes");
-  }
-}
-
 export default photographerFactory;
