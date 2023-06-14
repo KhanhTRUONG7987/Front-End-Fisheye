@@ -79,14 +79,9 @@ function photographerFactory(data) {
     img.src = picture;
     img.alt = " " + name;
 
-    totalLikesElement = document.createElement("div");
-    totalLikesElement.id = "total_likes";
-    totalLikesElement.textContent = `${likes} \u2665`;
-
     photographerPageHeaderContainer.appendChild(photographerInfo);
     photographerPageHeaderContainer.appendChild(contactButton);
     photographerPageHeaderContainer.appendChild(img);
-    photographerPageHeaderContainer.appendChild(totalLikesElement);
 
     return photographerPageHeaderContainer;
   }

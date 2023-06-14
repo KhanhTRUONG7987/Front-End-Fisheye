@@ -51,24 +51,46 @@ function lightboxFactory(medias) {
     if (mediaSources && mediaSources.length > 0) {
       // Iterate through the mediaSources and create DOM elements for each media
       mediaSources.forEach((source) => {
-        const imgElement = document.createElement("img");
-        imgElement.src = source.path;
-        imgElement.className = "lightbox-image";
-        imgElement.dataset.mediaId = source.id; // Update the dataset attribute to data-media-id
+        let elementMedia;
+
+        if (source.path.includes(".mp4")) {
+          elementMedia = document.createElement("video");
+          console.log('elementMedia :>> ', elementMedia);
+          elementMedia.autoplay = true;
+          elementMedia.controls = true;
+        } else {
+          elementMedia = document.createElement("img");
+        }
+
+        elementMedia.src = source.path;
+        elementMedia.className = "lightbox-image";
+        // elementMedia.dataset.mediaId = source.id; // Update the dataset attribute to data-media-id
+
+        // TODO: `!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`
 
         // Create title for the image
         const title = document.createElement("div");
         title.className = "image-title";
         title.innerText = source.title; // Set the title text
-        imgElement.appendChild(title); // Append the title to the image element
+        console.log('source :>> ', source);
+        console.log('title :>> ', title);
+        elementMedia.appendChild(title); // Append the title to the image element
+        console.log('elementMedia :>> ', elementMedia);
 
-        lightboxContent.appendChild(imgElement);
-        images.push(imgElement);
+        // TODO: `!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`
+
+        // Append a click event listener to the image element
+        elementMedia.addEventListener("click", () => {
+          openLightbox(source.id, images); // Pass the source ID and images to the openLightbox function
+        });
+
+        lightboxContent.appendChild(elementMedia);
+        images.push(elementMedia);
       });
     }
 
     // Add event listener to handle closing the lightbox
-    lightboxContainer.addEventListener("keydown", (event) => {
+    window.addEventListener("keydown", (event) => {
       if (event.key === "Escape") {
         closeLightbox();
       }
@@ -97,6 +119,41 @@ function lightboxFactory(medias) {
     updateCurrentImage();
   }
 
+  // Function to handle arrow key navigation
+  function handleKeydown(event) {
+    if (event.key === "ArrowLeft") {
+      // Handle left arrow key press
+      showPreviousImage();
+    } else if (event.key === "ArrowRight") {
+      // Handle right arrow key press
+      showNextImage();
+    } else if (event.key === "Enter") {
+      // Handle enter key press
+      const currentMediaElement = images[currentImageIndex];
+      if (currentMediaElement.tagName.toLowerCase() === "video") {
+        if (currentMediaElement.paused) {
+          currentMediaElement.play();
+        } else {
+          currentMediaElement.pause();
+        }
+      }
+    } else if (event.key === "f" || event.key === "F") {
+      // Handle "F" key press
+      const currentMediaElement = images[currentImageIndex];
+      if (currentMediaElement.tagName.toLowerCase() === "video") {
+        if (currentMediaElement.requestFullscreen) {
+          currentMediaElement.requestFullscreen();
+        } else if (currentMediaElement.mozRequestFullScreen) {
+          currentMediaElement.mozRequestFullScreen();
+        } else if (currentMediaElement.webkitRequestFullscreen) {
+          currentMediaElement.webkitRequestFullscreen();
+        } else if (currentMediaElement.msRequestFullscreen) {
+          currentMediaElement.msRequestFullscreen();
+        }
+      }
+    }
+  }
+
   // Function to update the lightbox
   function updateCurrentImage() {
     images.forEach((img, index) => {
@@ -113,6 +170,8 @@ function lightboxFactory(medias) {
   // Function to close the lightbox
   function closeLightbox() {
     lightboxContainer.classList.remove("open");
+    // Remove event listeners for arrow key navigation
+    document.removeEventListener("keydown", handleKeydown);
   }
 
   // Function to open the lightbox
@@ -157,6 +216,9 @@ function lightboxFactory(medias) {
       console.error("Invalid mediaId");
       return;
     }
+
+    // Add event listener for keydown events
+    document.addEventListener("keydown", handleKeydown);
   }
 
   // Return the necessary functions

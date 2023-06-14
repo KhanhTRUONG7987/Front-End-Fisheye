@@ -25,6 +25,8 @@ header {
   margin-left: 0.5em;
 }
 
+/* ################################################################ */
+
 #contact_modal {
   display: none;
   position: fixed;
@@ -127,13 +129,15 @@ a {
   margin-right: auto;
 }
 
+/* ################################################################ */
+
 #total_likes {
   background-color: #db8876;
   position: fixed;
   bottom: 0;
   right: 1em;
   padding: 10px;
-  color: white;
+  color: black;
   font-size: 16px;
 }
 
@@ -146,6 +150,8 @@ a {
 .modal-open #contact_modal {
   display: flex;
 }
+
+/* ################################################################ */
 
 #photographer_media {
   margin: auto;
@@ -171,22 +177,38 @@ a {
   object-fit: cover;
 }
 
-.media_element .mediaInfo {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-content: space-around;
+.mediaInfo {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.5em;
+  color: #901C1C;
 }
 
 .mediaInfo h3 {
-  text-align: left;
-  grid-column: 1;
+  margin: 0;
+  order: 1; 
 }
 
-.mediaInfo .likes {
-  text-align: right;
-  grid-column: 2;
+.mediaInfo span,
+.mediaInfo button {
+  order: 2;
 }
+
+.mediaInfo span {
+  font-size: 0.9em;
+}
+
+.mediaInfo button {
+  padding: 0.2em;
+  color: #901C1C;
+}
+
+button.like_button.like_button_active {
+  color: #901C1C;
+}
+
+/* ################################################################ */
 
 #lightbox {
   display: none;
@@ -281,6 +303,19 @@ button.next {
   margin: 0 auto;
 }
 
+.lightbox-content video {
+  max-width: 25em;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.lightbox-content .image-title {
+  color: #901C1C;
+}
+
+/* ################################################################ */
+
 /* Opacity for background elements */
 .modal-open {
   opacity: 0.6;
@@ -294,7 +329,6 @@ button.next {
   max-width: 500px;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: space-between;
   padding: 2em;
   margin: 20px auto;
@@ -304,26 +338,36 @@ button.next {
 .modal header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  width: 100%;
 }
 
-.modal header img {
-  cursor: pointer;
+.modal header .column-left {
+  display: flex;
+  align-items: left;
+  width: 70%;
+  flex-grow: 1;
 }
 
 .modal header h2 {
   font-size: 2em;
   font-weight: normal;
-  text-align: center;
+  margin: 0;
+  padding-top: 4em;
+}
+
+.modal header span {
+  font-size: 1em;
+  font-weight: normal;
   margin: 0;
 }
 
-.modal header img.close-modal {
+.modal img.close-modal {
+  margin-left: auto;
   width: 20px;
   height: 20px;
   cursor: pointer;
 }
+
+/* ################################################################ */
 
 .modal form {
   margin-top: 20px;

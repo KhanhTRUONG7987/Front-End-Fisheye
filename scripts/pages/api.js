@@ -67,7 +67,7 @@ async function getAllMedia() {
 
 // ################################################################################################
 
-// get the photographer's name by ID
+// Function to get the photographer's name by ID
 async function getPhotographerNameById(photographerId) {
   await getAllPhotographers(); // Wait for photographers data to be fetched
   const photographerFound = allPhotographers.find(
@@ -76,7 +76,7 @@ async function getPhotographerNameById(photographerId) {
   return photographerFound ? photographerFound.name : null;
 }
 
-// construct the file path for the media file
+// Funtion to construct the file path for the media file
 async function getMediaFilePath(media) {
   const photographerName = await getPhotographerNameById(media.photographerId);
   if (!photographerName) {
@@ -93,29 +93,27 @@ async function getMediaFilePath(media) {
 }
 // ################################################################################################
 
-// get the totalLikes for each photographer
+// Function to get the totalLikes for each photographer
 function calculateTotalLikes(data) {
   let totalLikes = 0;
-  
-  data.media.forEach(media => {
+
+  data.media.forEach((media) => {
     totalLikes += media.likes;
   });
-  
+
   return totalLikes;
 }
 
+// Function to calculate the total likes for a photographer's media
 async function calculateTotalLikesByPhotographerId(photographerId) {
-  try {
-    const media = await getAllMedia();
-    const photographerMedia = media.filter(
-      (m) => m.photographerId === parseInt(photographerId)
-    );
-    const totalLikes = calculateTotalLikes({ media: photographerMedia });
-    return totalLikes;
-  } catch (error) {
-    console.error(error);
-    return 0;
-  }
+  const media = await getMediaByPhotographerId(photographerId);
+  let totalLikes = 0;
+
+  media.forEach((item) => {
+    totalLikes += item.likes;
+  });
+
+  return totalLikes;
 }
 
 export {
