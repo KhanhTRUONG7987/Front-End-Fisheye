@@ -12,8 +12,7 @@ import {
 } from "./api.js";
 import closeModal from "../utils/contactForm.js";
 
-/* ################################################################ */
-/* ################################################################ */
+/* ################################################################ ** ################################################################ */
 
 // Function to get the photographer ID from the query parameter in the URL
 export function getPhotographerIdFromUrl() {
@@ -21,9 +20,6 @@ export function getPhotographerIdFromUrl() {
   const photographerId = urlParams.get("id");
   return photographerId || null; // Return null if photographerId is not found
 }
-
-/* ################################################################ */
-/* ################################################################ */
 
 // Wait for the DOM content to be loaded
 document.addEventListener("DOMContentLoaded", async function () {
@@ -36,18 +32,28 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Initialize totalLikes
   let totalLikes = 0;
 
-  // Calculate the total likes for the photographer's media
-  totalLikes = await calculateTotalLikesByPhotographerId(photographerData.id);
+  // Check if photographerData is defined
+  if (photographerData) {
+    const initialMedia = await getMediaByPhotographerId(photographerData.id);
 
-  // Display the photographer's page using the photographerData
-  displayPagePhotographer(photographerData, totalLikes);
+    // Calculate the total likes for the photographer's media
+    totalLikes = await calculateTotalLikesByPhotographerId(photographerData.id);
+
+    // Display the photographer's page using the photographerData
+    displayPagePhotographer(photographerData, initialMedia, totalLikes);
+  }
 
   // Add event listener to the close button of the modal
   document.querySelector(".close-modal").addEventListener("click", closeModal);
+  // Add an event listener to detect changes in the dropdown menu
+  document
+    .getElementById("sort")
+    .addEventListener("change", async function (event) {
+      const sortType = event.target.value;
+      await updateSortedMedia(photographerData, sortType);
+    });
 });
-
-/* ################################################################ */
-/* ################################################################ */
+/* ################################################################ ** ################################################################ */
 
 // Variables to store image sources, titles, and current image index for the lightbox
 let mediaSources = [];
@@ -60,22 +66,24 @@ let totalLikesElement;
 async function updateTotalLikes(photographerData) {
   const likes = await calculateTotalLikesByPhotographerId(photographerData.id);
   if (totalLikesElement) {
+    console.log("totalLikesElement 1 :>> ", totalLikesElement);
     const pricePerDay = photographerData.price + "€/jour";
     totalLikesElement.textContent = `${likes} \u2665 ${pricePerDay}`;
-    console.log("totalLikesElement :>> ", totalLikesElement);
+    console.log("totalLikesElement 2 :>> ", totalLikesElement);
   } else {
     console.error("Element not found: #total_likes");
   }
 }
 
+/* ################################################################ (* I *) ################################################################ */
 
+// Function to create a media element
+async function createMediaElement(media, index) {
 
+  
+}
 
-/* ################################################################ */
-
-
-
-
+/* ################################################################ (* I *) ################################################################ */
 
 // Function to display the photographer's page
 async function displayPagePhotographer(photographerData, totalLikes) {
@@ -85,12 +93,9 @@ async function displayPagePhotographer(photographerData, totalLikes) {
   const photographerPageHeaderDOM =
     photographerModel.getPhotographerPageHeaderDOM(photographerData);
 
-    /* ################################################################ */
-    /* ################################################################ */
-  
   // Create the "column-left" container for h2 & span
-  const columnLeftContainer = document.createElement('div');
-  columnLeftContainer.className = 'column-left';
+  const columnLeftContainer = document.createElement("div");
+  columnLeftContainer.className = "column-left";
 
   // Create the "Contactez-moi" heading element
   const contactHeading = document.createElement("h2");
@@ -123,20 +128,18 @@ async function displayPagePhotographer(photographerData, totalLikes) {
     console.error("Element not found: button.contact_button");
   }
 
-  /* ################################################################ */
-  /* ################################################################ */
-
   // Create the totalLikesElement
   totalLikesElement = document.createElement("div");
   totalLikesElement.id = "total_likes";
   const pricePerDay = photographerData.price + "€/jour";
   totalLikesElement.textContent = `${totalLikes} \u2665 ${pricePerDay}`;
-  
+
   // Assign the totalLikesElement to the photographerModel
   photographerModel.totalLikesElement = totalLikesElement;
 
   // Get the photographer media container element from the HTML document
-  const photographerMediaContainer = document.getElementById("photographer_media");
+  const photographerMediaContainer =
+    document.getElementById("photographer_media");
 
   // Insert the photographer page header before the photographer_media element
   photographerMediaContainer.insertAdjacentElement(
@@ -149,10 +152,7 @@ async function displayPagePhotographer(photographerData, totalLikes) {
     "beforebegin",
     totalLikesElement
   );
-  console.log('totalLikesElement :>> ', totalLikesElement);
-
-  /* ################################################################ */
-  /* ################################################################ */
+  console.log("totalLikesElement :>> ", totalLikesElement);
 
   // Get the media for the photographer by ID using the getMediaByPhotographerId function
   const photographerMedia = await getMediaByPhotographerId(photographerData.id);
@@ -161,11 +161,9 @@ async function displayPagePhotographer(photographerData, totalLikes) {
   // Call the updateTotalLikes function with the initial number of likes
   if (photographerData.media && photographerData.media.length > 0) {
     updateTotalLikes(photographerData);
+    console.log("photographerData ???????? :>> ", photographerData);
   }
 
-  /* ################################################################ */
-  /* ################################################################ */
-  
   if (photographerMedia && photographerMedia.length > 0) {
     // Loop through each media item
     for (let i = 0; i < photographerMedia.length; i++) {
@@ -180,10 +178,6 @@ async function displayPagePhotographer(photographerData, totalLikes) {
       // Add media ID as a data attribute
       mediaElement.setAttribute("data-media-id", media.id);
 
-      /* ################################################################ */
-      /* ################################################################ */
-      /* ################################################################ */
-
       const mediaInfo = document.createElement("div");
       mediaInfo.className = "mediaInfo";
 
@@ -191,7 +185,7 @@ async function displayPagePhotographer(photographerData, totalLikes) {
       titleElement.textContent = media.title;
       imageTitles.push(media.title);
 
-      const likesCountElement = document.createElement("span"); 
+      const likesCountElement = document.createElement("span");
       likesCountElement.className = "likes_count";
       likesCountElement.textContent = `${media.likes}`; // Initial likes count
 
@@ -211,20 +205,19 @@ async function displayPagePhotographer(photographerData, totalLikes) {
           likeButton.textContent = `\u2665`;
           likeButton.disabled = true;
           likeButton.style.opacity = "1";
-          likeButton.classList.add("like_button_active"); // Add the class "like_button_active"
+          likeButton.classList.add("like_button_active");
 
-          totalLikes++; // Increment totalLikes when a media is liked
+          // Increment totalLikes when a media is liked
+          totalLikes++;
           updateTotalLikes(photographerData);
         }
       });
 
       function updateTotalLikes(photographerData) {
+        console.log("photographerData i am here 1:>> ", photographerData);
         totalLikesElement.textContent = `${totalLikes} \u2665 ${photographerData.price}€/jour`;
+        console.log("totalLikesElement I am here 2:>> ", totalLikesElement);
       }
-
-      /* ################################################################ */
-      /* ################################################################ */
-      /* ################################################################ */
 
       // Get the file path for the media using the getMediaFilePath function
       const filePath = await getMediaFilePath(media);
@@ -249,7 +242,7 @@ async function displayPagePhotographer(photographerData, totalLikes) {
       }
 
       mediaInfo.appendChild(titleElement);
-      mediaInfo.appendChild(likesCountElement); 
+      mediaInfo.appendChild(likesCountElement);
 
       // Skip updating the likes count in the .mediaInfo span when the like button is active
       if (!likeButton.classList.contains("like_button_active")) {
@@ -267,19 +260,18 @@ async function displayPagePhotographer(photographerData, totalLikes) {
       );
     }
 
-    /* ################################################################ */
-    /* ################################################################ */
-    /* ################################################################ */
-
     // Create the lightbox with the mediaSources
     const lightbox = lightboxFactory(mediaSources);
 
     // Add click event listener to the media elements to open the lightbox
-    const mediaElements = document.querySelectorAll("#photographer_media .media_element");
+    const mediaElements = document.querySelectorAll(
+      "#photographer_media .media_element"
+    );
+
     mediaElements.forEach((element) => {
       const imageElement = element.querySelector("img");
       const videoElement = element.querySelector("video");
-      
+
       if (imageElement) {
         imageElement.addEventListener("click", () => {
           const mediaId = element.dataset.mediaId;
@@ -302,7 +294,133 @@ async function displayPagePhotographer(photographerData, totalLikes) {
   console.log("media:", photographerMedia);
 }
 
-/* ################################################################ */
+/* ################################################################ (* I *) ################################################################ */
+
+// Function to display media sorted by popularity or date or title
+async function displaySortedMedia(photographerData, sortType) {
+  const photographerMediaContainer =
+    document.getElementById("photographer_media");
+
+  // Remove all existing media elements
+  while (photographerMediaContainer.firstChild) {
+    photographerMediaContainer.removeChild(
+      photographerMediaContainer.firstChild
+    );
+  }
+
+  // // call the dropdown element
+  // const dropdownElement = document.querySelector(".dropdown");
+
+  // // Insert the dropdown before the photographer_media element
+  // photographerMediaContainer.insertAdjacentElement(
+  //   "beforebegin",
+  //   dropdownElement
+  // );
+
+  let sortedMedia;
+  const photographerId = photographerData.id;
+
+  if (sortType === "popularité") {
+    // Get the media sorted by popularity (likes)
+    sortedMedia = await getMediaByPhotographerId(photographerId, "likes");
+  } else if (sortType === "date") {
+    // Get the media sorted by date (latest first)
+    sortedMedia = await getMediaByPhotographerId(photographerId, "date");
+  } else if (sortType === "title") {
+    // Get the media sorted by title (alphabetical order)
+    sortedMedia = await getMediaByPhotographerId(photographerId, "title");
+  }
+
+  // Loop through each sorted media item
+  for (let i = 0; i < sortedMedia.length; i++) {
+    const media = sortedMedia[i];
+
+    const mediaElement = document.createElement("div");
+    mediaElement.className = "media_element";
+
+    // Set media index as a data attribute
+    mediaElement.dataset.mediaIndex = i;
+
+    // Add media ID as a data attribute
+    mediaElement.setAttribute("data-media-id", media.id);
+
+    const mediaInfo = document.createElement("div");
+    mediaInfo.className = "mediaInfo";
+
+    const titleElement = document.createElement("h3");
+    titleElement.textContent = media.title;
+
+    const likesCountElement = document.createElement("span");
+    likesCountElement.className = "likes_count";
+    likesCountElement.textContent = `${media.likes}`;
+
+    const likeButton = document.createElement("button");
+    likeButton.className = "like_button";
+    likeButton.innerHTML = "\u2661";
+
+    // Initialize the liked property of each media item to false
+    media.liked = false;
+
+    // Add an event listener to each like button to manage the liking
+    likeButton.addEventListener("click", () => {
+      if (!media.liked) {
+        media.likes++;
+        media.liked = true;
+        likesCountElement.textContent = `${media.likes}`;
+        likeButton.textContent = `\u2665`;
+        likeButton.disabled = true;
+        likeButton.style.opacity = "1";
+        likeButton.classList.add("like_button_active");
+
+        // Increment totalLikes when a media is liked
+        totalLikes++;
+        updateTotalLikes(photographerData);
+      }
+    });
+
+    const filePath = await getMediaFilePath(media);
+
+    if (media.image) {
+      const imageElement = document.createElement("img");
+      imageElement.src = filePath;
+
+      mediaElement.appendChild(imageElement);
+    } else if (media.video) {
+      const videoElement = document.createElement("video");
+      videoElement.src = filePath;
+      videoElement.alt = media.title;
+      videoElement.controls = true;
+
+      mediaElement.appendChild(videoElement);
+    }
+
+    mediaInfo.appendChild(titleElement);
+    mediaInfo.appendChild(likesCountElement);
+
+    // Skip updating the likes count in the .mediaInfo span when the like button is active
+    if (!likeButton.classList.contains("like_button_active")) {
+      mediaInfo.appendChild(likesCountElement);
+    }
+
+    mediaElement.appendChild(mediaInfo);
+    mediaElement.appendChild(likeButton);
+
+    photographerMediaContainer.appendChild(mediaElement);
+  }
+}
+
+/* ################################################################ (* I *) ################################################################ */
+
+// Function to update the media displayed based on the selected sort option
+async function updateSortedMedia(photographerData, sortType) {
+  const photographerMediaContainer =
+    document.getElementById("photographer_media");
+  photographerMediaContainer.innerHTML = "";
+  await displaySortedMedia(photographerData, sortType);
+}
+
+/* ################################################################ *    * ################################################################ */
+/* ################################################################ * II * ################################################################ */
 
 const contactButton = document.querySelector(".submit_button");
 const modalOverlay = document.createElement("div");
@@ -325,7 +443,7 @@ modalOverlay.addEventListener("click", () => {
   body.classList.remove("modal-open");
 });
 
-/* ################################################################ */
+/* ################################################################ * III * ################################################################ */
 
 const form = document.querySelector("form");
 
@@ -358,8 +476,6 @@ function submitForm(event) {
   body.classList.remove("modal-open");
 }
 
-/* ################################################################ */
-
 // Add event listener to the submit button of the form
 const submitButton = document.querySelector(".submit_button");
 submitButton.addEventListener("click", submitForm);
@@ -379,6 +495,6 @@ function handleEnterKey(event) {
   }
 }
 
-/* ################################################################ */
+/* ################################################################ ** ################################################################ */
 
 export { displayPagePhotographer };

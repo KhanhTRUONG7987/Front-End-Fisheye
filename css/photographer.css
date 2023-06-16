@@ -59,18 +59,18 @@ body.modal-open {
   pointer-events: none;
 }
 
+/* ################################################################ */
+
 .photograph_header {
   background-color: #fafafa;
   align-items: center;
   justify-self: center;
-  justify-content: flex-start;
   width: 100%;
-  height: auto;
-  margin: 0em 0em 2em 0em;
-  padding: 1em 0em 1em 1em;
   display: grid;
-  grid-template-columns: 3fr 1fr 1fr;
-  gap: 1em;
+  grid-template-columns: 1fr 1fr 1fr;
+  align-items: center;
+  margin: 0em 0em 5em 0em;
+  padding: 1em 0em 1em 1em;
 }
 
 a {
@@ -78,11 +78,11 @@ a {
 }
 
 .photographer_info {
-  display: flex;
-  flex-direction: column;
+  grid-column: 1;
+  gap: 0.2em;
   justify-content: center;
   gap: 0.2em;
-  grid-column: 1;
+  flex: 1;
 }
 
 .photographer_info h2 {
@@ -109,9 +109,10 @@ a {
   background-color: #901c1c;
   border-radius: 0.5em;
   cursor: pointer;
-  grid-column: 2;
   align-self: center;
   font-size: 1em;
+  grid-column: 2;
+  margin: 0em 3em 0em 3em;
 }
 
 .contact_button:focus {
@@ -119,14 +120,29 @@ a {
 }
 
 .photograph_header img {
-  max-height: 10em;
-  width: 100%;
+  display: flex;
+  width: 50%;
   aspect-ratio: 1 / 1;
   clip-path: circle(30% at 50% 50%);
+  float: right;
   object-fit: contain;
   filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
   grid-column: 3;
-  margin-right: auto;
+  justify-content:end;
+}
+
+/* ################################################################ */
+
+.dropdown {
+  margin-top: 20px;
+}
+
+label {
+  margin-right: 10px;
+}
+
+select {
+  padding: 5px;
 }
 
 /* ################################################################ */

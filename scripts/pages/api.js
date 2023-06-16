@@ -78,18 +78,21 @@ async function getPhotographerNameById(photographerId) {
 
 // Funtion to construct the file path for the media file
 async function getMediaFilePath(media) {
-  const photographerName = await getPhotographerNameById(media.photographerId);
-  if (!photographerName) {
+  try {
+    await getAllPhotographers(); // Wait for photographers data to be fetched
+    const photographerName = await getPhotographerNameById(media.photographerId);
+    if (!photographerName) {
+      return null;
+    }
+    const firstName = photographerName.split(" ")[0];
+    const fileName = media.image || media.video;
+    const filePath = `assets/photographers/${firstName.replace("-", " ")}/${fileName}`;
+    console.log("File path:", filePath);
+    return filePath;
+  } catch (error) {
+    console.error(error);
     return null;
   }
-  const firstName = photographerName.split(" ")[0];
-  const fileName = media.image || media.video;
-  const filePath = `assets/photographers/${firstName.replace(
-    "-",
-    " "
-  )}/${fileName}`;
-  console.log("File path:", filePath);
-  return filePath;
 }
 // ################################################################################################
 
