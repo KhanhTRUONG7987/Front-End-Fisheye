@@ -2,5 +2,5 @@
 
 ## Démarrer le projet
 
-Rien à installer ici, il suffit d'ouvrir le fichier `index.html`.
+My site is live at https://khanhtruong7987.github.io/Front-End-Fisheye/
 
