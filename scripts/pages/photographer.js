@@ -23,6 +23,31 @@ export function getPhotographerIdFromUrl() {
 
 // Initialize totalLikes
 let totalLikes = 0;
+let likedMedia = []; // Array to store the IDs of liked media
+
+// Function to check if a media is liked
+function isMediaLiked(mediaId) {
+  return likedMedia.includes(mediaId);
+}
+
+function updateMediaLikedStatus(mediaId, liked) {
+  const likeButton = document.querySelector(`.like_button_${mediaId}`);
+  if (liked) {
+    likedMedia.push(mediaId);
+    likeButton.textContent = `\u2665`;
+    likeButton.classList.add("like_button_active");
+  }
+}
+
+function updateLikeButton(likeButton, liked) {
+  if (liked) {
+    likeButton.innerHTML = `\u2665`;
+    likeButton.classList.add("like_button_active");
+  } else {
+    likeButton.innerHTML = `\u2661`;
+    likeButton.classList.remove("like_button_active");
+  }
+}
 
 // Wait for the DOM content to be loaded
 document.addEventListener("DOMContentLoaded", async function () {
@@ -48,17 +73,32 @@ document.addEventListener("DOMContentLoaded", async function () {
     .getElementById("sort")
     .addEventListener("change", async function (event) {
       const sortType = event.target.value;
-      console.log(sortType);
 
       const filteredElements = await getFilteredElements(
-        urlParams.get("id"),
+        photographerId,
         sortType
       );
-
       await createMediaElement(filteredElements);
 
-      //await updateSortedMedia(photographerData, sortType);
+      likeButton.classList.add("like_button_active");
+
+
+      // Update the totalLikes variable with the new total likes
+      totalLikes = await calculateTotalLikesByPhotographerId(
+        photographerData.id
+      );
+
     });
+
+  // Get the select element
+var selectElement = document.getElementById("sort");
+
+// Get the options within the select element
+var options = selectElement.options;
+
+// Set the CSS style of the second option (index 1)
+options[1].style.backgroundColor = "yellow";
+options[1].style.color = "red";
 });
 /* ################################################################ ** ################################################################ */
 
@@ -66,7 +106,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 let mediaSources = [];
 let mediaTitles = [];
 let currentImageIndex = 0;
-
 let totalLikesElement;
 
 // Update the totalLikesElement with the calculated total likes
@@ -114,7 +153,7 @@ async function createMediaElement(elements) {
       const titleElement = document.createElement("h3");
       titleElement.textContent = media.title;
       mediaTitles.push(media.title);
-      console.log('mediaTitles :>> ', mediaTitles);
+      console.log("mediaTitles :>> ", mediaTitles);
 
       const likesCountElement = document.createElement("span");
       likesCountElement.className = "likes_count";
@@ -134,8 +173,8 @@ async function createMediaElement(elements) {
       mediaInfo.appendChild(titleElement);
       mediaInfo.appendChild(rightSection);
 
-      // Initialize the liked property of each media item to false
-      media.liked = false;
+      // Initialize the liked property of each media item
+      media.liked = isMediaLiked(media.id);
 
       // Add an event listener to each like button to manage the liking
       likeButton.addEventListener("click", () => {
@@ -143,14 +182,18 @@ async function createMediaElement(elements) {
           media.likes++;
           media.liked = true;
           likesCountElement.textContent = `${media.likes}`;
-          likeButton.textContent = `\u2665`;
           likeButton.disabled = true;
           likeButton.style.opacity = "1";
-          likeButton.classList.add("like_button_active");
+
+          // Update the like button appearance
+          updateLikeButton(likeButton, media.liked);
 
           // Increment totalLikes when a media is liked
           totalLikes++;
           updateTotalLikes(photographerData);
+
+          // Update the liked status of the media
+          updateMediaLikedStatus(media.id, true);
         }
       });
 
@@ -178,6 +221,7 @@ async function createMediaElement(elements) {
 
       // Skip updating the likes count in the .mediaInfo span when the like button is active
       if (!likeButton.classList.contains("like_button_active")) {
+        updateLikeButton(likeButton, media.liked);
       }
 
       mediaElement.appendChild(mediaInfo);
@@ -380,20 +424,6 @@ function handleEnterKey(event) {
     submitForm(event);
   }
 }
-
-
-const selectSort = document.querySelector('select#sort');
-
-selectSort.addEventListener('change', function() {
-  const option = document.getElementsByTagName("option");
-
-  if (target.value == popularity || target.value == title || target.value == date) {
-    option.style.color = "white";
-    option.style.backgroundColor = "#901c1c";
-  } else {
-    alert("There was an error!");
-  };
-});
 
 /* ################################################################ ** ################################################################ */
 
