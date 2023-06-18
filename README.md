@@ -2,5 +2,4 @@
 
 ## Démarrer le projet
 
-My site is live at https://khanhtruong7987.github.io/Front-End-Fisheye/
 
