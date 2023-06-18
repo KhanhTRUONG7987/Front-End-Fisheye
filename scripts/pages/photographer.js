@@ -6,9 +6,9 @@ import lightboxFactory from "../factories/lightbox.js";
 import photographerFactory from "../factories/photographer.js";
 import {
   getPhotographerById,
-  getMediaByPhotographerId,
   getMediaFilePath,
   calculateTotalLikesByPhotographerId,
+  getFilteredElements,
 } from "./api.js";
 import closeModal from "../utils/contactForm.js";
 
@@ -21,54 +21,62 @@ export function getPhotographerIdFromUrl() {
   return photographerId || null; // Return null if photographerId is not found
 }
 
+// Initialize totalLikes
+let totalLikes = 0;
+
 // Wait for the DOM content to be loaded
 document.addEventListener("DOMContentLoaded", async function () {
+  const urlParams = new URLSearchParams(window.location.search);
+
   // Get the photographer ID from the query parameter
   const photographerId = getPhotographerIdFromUrl();
   // Get the photographer data by ID using the getPhotographerById function
   const photographerData = await getPhotographerById(photographerId);
   console.log("photographerFromGetById :>> ", photographerData);
 
-  // Initialize totalLikes
-  let totalLikes = 0;
-
   // Check if photographerData is defined
   if (photographerData) {
-    const initialMedia = await getMediaByPhotographerId(photographerData.id);
-
     // Calculate the total likes for the photographer's media
     totalLikes = await calculateTotalLikesByPhotographerId(photographerData.id);
 
     // Display the photographer's page using the photographerData
-    displayPagePhotographer(photographerData, initialMedia, totalLikes);
+    displayPagePhotographer(photographerData, totalLikes);
   }
 
-  // Add event listener to the close button of the modal
-  document.querySelector(".close-modal").addEventListener("click", closeModal);
   // Add an event listener to detect changes in the dropdown menu
   document
     .getElementById("sort")
     .addEventListener("change", async function (event) {
       const sortType = event.target.value;
-      await updateSortedMedia(photographerData, sortType);
+      console.log(sortType);
+
+      const filteredElements = await getFilteredElements(
+        urlParams.get("id"),
+        sortType
+      );
+
+      await createMediaElement(filteredElements);
+
+      //await updateSortedMedia(photographerData, sortType);
     });
 });
 /* ################################################################ ** ################################################################ */
 
 // Variables to store image sources, titles, and current image index for the lightbox
 let mediaSources = [];
-let imageTitles = [];
+let mediaTitles = [];
 let currentImageIndex = 0;
 
 let totalLikesElement;
 
 // Update the totalLikesElement with the calculated total likes
 async function updateTotalLikes(photographerData) {
+  console.log(">>>>>>>> photographerData, ", photographerData);
   const likes = await calculateTotalLikesByPhotographerId(photographerData.id);
   if (totalLikesElement) {
     console.log("totalLikesElement 1 :>> ", totalLikesElement);
     const pricePerDay = photographerData.price + "€/jour";
-    totalLikesElement.textContent = `${likes} \u2665 ${pricePerDay}`;
+    totalLikesElement.textContent = `${totalLikes} \u2665 ${pricePerDay}`;
     console.log("totalLikesElement 2 :>> ", totalLikesElement);
   } else {
     console.error("Element not found: #total_likes");
@@ -78,15 +86,147 @@ async function updateTotalLikes(photographerData) {
 /* ################################################################ (* I *) ################################################################ */
 
 // Function to create a media element
-async function createMediaElement(media, index) {
+async function createMediaElement(elements) {
+  const photographerData = await getPhotographerById(
+    getPhotographerIdFromUrl()
+  );
+  const photographerMediaContainer = document.getElementById("media");
 
-  
+  photographerMediaContainer.innerHTML = "";
+
+  if (elements && elements.length > 0) {
+    // Loop through each media item
+    for (let i = 0; i < elements.length; i++) {
+      const media = elements[i];
+
+      const mediaElement = document.createElement("div");
+      mediaElement.className = "media_element";
+
+      // Set media index as a data attribute
+      mediaElement.dataset.mediaIndex = i;
+
+      // Add media ID as a data attribute
+      mediaElement.setAttribute("data-media-id", media.id);
+
+      const mediaInfo = document.createElement("div");
+      mediaInfo.className = "mediaInfo";
+
+      const titleElement = document.createElement("h3");
+      titleElement.textContent = media.title;
+      mediaTitles.push(media.title);
+      console.log('mediaTitles :>> ', mediaTitles);
+
+      const likesCountElement = document.createElement("span");
+      likesCountElement.className = "likes_count";
+      likesCountElement.textContent = `${media.likes}`; // Initial likes count
+
+      const likeButton = document.createElement("button");
+      likeButton.className = "like_button";
+      likeButton.innerHTML = "\u2661"; // Use the heart symbol as the like button
+
+      const rightSection = document.createElement("div");
+      rightSection.classList.add("right-section");
+
+      // Move likesCountElement and likeButton inside the rightSection div
+      rightSection.appendChild(likesCountElement);
+      rightSection.appendChild(likeButton);
+
+      mediaInfo.appendChild(titleElement);
+      mediaInfo.appendChild(rightSection);
+
+      // Initialize the liked property of each media item to false
+      media.liked = false;
+
+      // Add an event listener to each like button to manage the liking
+      likeButton.addEventListener("click", () => {
+        if (!media.liked) {
+          media.likes++;
+          media.liked = true;
+          likesCountElement.textContent = `${media.likes}`;
+          likeButton.textContent = `\u2665`;
+          likeButton.disabled = true;
+          likeButton.style.opacity = "1";
+          likeButton.classList.add("like_button_active");
+
+          // Increment totalLikes when a media is liked
+          totalLikes++;
+          updateTotalLikes(photographerData);
+        }
+      });
+
+      // Get the file path for the media using the getMediaFilePath function
+      const filePath = await getMediaFilePath(media);
+      mediaSources.push({
+        mediaIndex: i, // (index of the media element)
+        path: filePath,
+      });
+
+      if (media.image) {
+        const imageElement = document.createElement("img");
+        imageElement.src = await getMediaFilePath(media);
+
+        mediaElement.appendChild(imageElement);
+      } else if (media.video) {
+        const videoElement = document.createElement("video");
+        videoElement.src = await getMediaFilePath(media);
+        videoElement.alt = media.title;
+        videoElement.controls = true;
+        console.log("videoElement:", videoElement);
+
+        mediaElement.appendChild(videoElement);
+      }
+
+      // Skip updating the likes count in the .mediaInfo span when the like button is active
+      if (!likeButton.classList.contains("like_button_active")) {
+      }
+
+      mediaElement.appendChild(mediaInfo);
+      photographerMediaContainer.appendChild(mediaElement);
+    }
+
+    // Create the lightbox with the mediaSources
+    const lightbox = lightboxFactory(mediaSources, mediaTitles);
+
+    // Add click event listener to the media elements to open the lightbox
+    const mediaElements = document.querySelectorAll(
+      "#photographer_media .media_element"
+    );
+
+    mediaElements.forEach((element) => {
+      const imageElement = element.querySelector("img");
+      const videoElement = element.querySelector("video");
+
+      if (imageElement) {
+        imageElement.addEventListener("click", () => {
+          const mediaId = element.dataset.mediaId;
+          lightbox.openLightbox(mediaId, mediaElements, mediaTitles);
+        });
+      } else if (videoElement) {
+        videoElement.addEventListener("click", () => {
+          const mediaId = element.dataset.mediaId;
+          lightbox.openLightbox(mediaId, mediaElements, mediaTitles);
+        });
+      }
+    });
+
+    // Find the container element to append the lightbox modal
+    const container = document.querySelector("#lightbox-wrapper");
+
+    // Append the returned element to the container
+    container.append(lightbox.createLightbox());
+  }
 }
 
 /* ################################################################ (* I *) ################################################################ */
 
 // Function to display the photographer's page
 async function displayPagePhotographer(photographerData, totalLikes) {
+  function updateTotalLikes(photographerData) {
+    console.log("photographerData i am here 1:>> ", photographerData);
+    totalLikesElement.textContent = `${totalLikes} \u2665 ${photographerData.price}€/jour`;
+    console.log("totalLikesElement I am here 2:>> ", totalLikesElement);
+  }
+
   const photographerModel = photographerFactory(photographerData);
 
   // Get the DOM element for the photographer's page header
@@ -108,24 +248,23 @@ async function displayPagePhotographer(photographerData, totalLikes) {
   columnLeftContainer.appendChild(contactHeading);
   columnLeftContainer.appendChild(firstNameElement);
 
-  // Create close button element
-  // const closeButton = document.createElement("span");
-  // closeButton.textContent = `X`;
+  // Add event listener to the close button of the modal
+  const closeModalButton = document.querySelector(".close-modal");
+  if (closeModalButton) {
+    closeModalButton.addEventListener("click", closeModal);
+  } else {
+    console.error("Element not found: .close-modal");
+  }
 
   // Get the contact button element
   const formContact = document.querySelector(".modal header");
 
   // Check if contactButton exists before appending the elements
-  if (contactButton) {
+  if (formContact) {
     // Append the elements to the contactButton
-    formContact.insertAdjacentElement("beforebegin", contactHeading);
-    formContact.insertAdjacentElement("beforebegin", firstNameElement);
-    // formContact.insertAdjacentElement(
-    //   "beforebegin",
-    //   closeButton
-    // );
+    formContact.prepend(columnLeftContainer);
   } else {
-    console.error("Element not found: button.contact_button");
+    console.error("Element not found: .modal header");
   }
 
   // Create the totalLikesElement
@@ -154,269 +293,16 @@ async function displayPagePhotographer(photographerData, totalLikes) {
   );
   console.log("totalLikesElement :>> ", totalLikesElement);
 
-  // Get the media for the photographer by ID using the getMediaByPhotographerId function
-  const photographerMedia = await getMediaByPhotographerId(photographerData.id);
-  console.log("photographerMedia :>> ", photographerMedia);
-
   // Call the updateTotalLikes function with the initial number of likes
   if (photographerData.media && photographerData.media.length > 0) {
     updateTotalLikes(photographerData);
     console.log("photographerData ???????? :>> ", photographerData);
   }
 
-  if (photographerMedia && photographerMedia.length > 0) {
-    // Loop through each media item
-    for (let i = 0; i < photographerMedia.length; i++) {
-      const media = photographerMedia[i];
+  const photographerMedia = await getFilteredElements(photographerData.id);
+  createMediaElement(photographerMedia);
 
-      const mediaElement = document.createElement("div");
-      mediaElement.className = "media_element";
-
-      // Set media index as a data attribute
-      mediaElement.dataset.mediaIndex = i;
-
-      // Add media ID as a data attribute
-      mediaElement.setAttribute("data-media-id", media.id);
-
-      const mediaInfo = document.createElement("div");
-      mediaInfo.className = "mediaInfo";
-
-      const titleElement = document.createElement("h3");
-      titleElement.textContent = media.title;
-      imageTitles.push(media.title);
-
-      const likesCountElement = document.createElement("span");
-      likesCountElement.className = "likes_count";
-      likesCountElement.textContent = `${media.likes}`; // Initial likes count
-
-      const likeButton = document.createElement("button");
-      likeButton.className = "like_button";
-      likeButton.innerHTML = "\u2661"; // Use the heart symbol as the like button
-
-      // Initialize the liked property of each media item to false
-      media.liked = false;
-
-      // Add an event listener to each like button to manage the liking
-      likeButton.addEventListener("click", () => {
-        if (!media.liked) {
-          media.likes++;
-          media.liked = true;
-          likesCountElement.textContent = `${media.likes}`;
-          likeButton.textContent = `\u2665`;
-          likeButton.disabled = true;
-          likeButton.style.opacity = "1";
-          likeButton.classList.add("like_button_active");
-
-          // Increment totalLikes when a media is liked
-          totalLikes++;
-          updateTotalLikes(photographerData);
-        }
-      });
-
-      function updateTotalLikes(photographerData) {
-        console.log("photographerData i am here 1:>> ", photographerData);
-        totalLikesElement.textContent = `${totalLikes} \u2665 ${photographerData.price}€/jour`;
-        console.log("totalLikesElement I am here 2:>> ", totalLikesElement);
-      }
-
-      // Get the file path for the media using the getMediaFilePath function
-      const filePath = await getMediaFilePath(media);
-      mediaSources.push({
-        mediaIndex: i, // (index of the media element)
-        path: filePath,
-      });
-
-      if (media.image) {
-        const imageElement = document.createElement("img");
-        imageElement.src = await getMediaFilePath(media);
-
-        mediaElement.appendChild(imageElement);
-      } else if (media.video) {
-        const videoElement = document.createElement("video");
-        videoElement.src = await getMediaFilePath(media);
-        videoElement.alt = media.title;
-        videoElement.controls = true;
-        console.log("videoElement:", videoElement);
-
-        mediaElement.appendChild(videoElement);
-      }
-
-      mediaInfo.appendChild(titleElement);
-      mediaInfo.appendChild(likesCountElement);
-
-      // Skip updating the likes count in the .mediaInfo span when the like button is active
-      if (!likeButton.classList.contains("like_button_active")) {
-        mediaInfo.appendChild(likesCountElement);
-      }
-
-      mediaInfo.appendChild(likeButton);
-
-      mediaElement.appendChild(mediaInfo);
-
-      photographerMediaContainer.appendChild(mediaElement);
-      console.log(
-        "photographerMediaContainer :>> ",
-        photographerMediaContainer
-      );
-    }
-
-    // Create the lightbox with the mediaSources
-    const lightbox = lightboxFactory(mediaSources);
-
-    // Add click event listener to the media elements to open the lightbox
-    const mediaElements = document.querySelectorAll(
-      "#photographer_media .media_element"
-    );
-
-    mediaElements.forEach((element) => {
-      const imageElement = element.querySelector("img");
-      const videoElement = element.querySelector("video");
-
-      if (imageElement) {
-        imageElement.addEventListener("click", () => {
-          const mediaId = element.dataset.mediaId;
-          lightbox.openLightbox(mediaId, mediaElements);
-        });
-      } else if (videoElement) {
-        videoElement.addEventListener("click", () => {
-          const mediaId = element.dataset.mediaId;
-          lightbox.openLightbox(mediaId, mediaElements);
-        });
-      }
-    });
-
-    // Find the container element to append the lightbox modal
-    const container = document.querySelector("#lightbox-wrapper");
-
-    // Append the returned element to the container
-    container.append(lightbox.createLightbox());
-  }
   console.log("media:", photographerMedia);
-}
-
-/* ################################################################ (* I *) ################################################################ */
-
-// Function to display media sorted by popularity or date or title
-async function displaySortedMedia(photographerData, sortType) {
-  const photographerMediaContainer =
-    document.getElementById("photographer_media");
-
-  // Remove all existing media elements
-  while (photographerMediaContainer.firstChild) {
-    photographerMediaContainer.removeChild(
-      photographerMediaContainer.firstChild
-    );
-  }
-
-  // // call the dropdown element
-  // const dropdownElement = document.querySelector(".dropdown");
-
-  // // Insert the dropdown before the photographer_media element
-  // photographerMediaContainer.insertAdjacentElement(
-  //   "beforebegin",
-  //   dropdownElement
-  // );
-
-  let sortedMedia;
-  const photographerId = photographerData.id;
-
-  if (sortType === "popularité") {
-    // Get the media sorted by popularity (likes)
-    sortedMedia = await getMediaByPhotographerId(photographerId, "likes");
-  } else if (sortType === "date") {
-    // Get the media sorted by date (latest first)
-    sortedMedia = await getMediaByPhotographerId(photographerId, "date");
-  } else if (sortType === "title") {
-    // Get the media sorted by title (alphabetical order)
-    sortedMedia = await getMediaByPhotographerId(photographerId, "title");
-  }
-
-  // Loop through each sorted media item
-  for (let i = 0; i < sortedMedia.length; i++) {
-    const media = sortedMedia[i];
-
-    const mediaElement = document.createElement("div");
-    mediaElement.className = "media_element";
-
-    // Set media index as a data attribute
-    mediaElement.dataset.mediaIndex = i;
-
-    // Add media ID as a data attribute
-    mediaElement.setAttribute("data-media-id", media.id);
-
-    const mediaInfo = document.createElement("div");
-    mediaInfo.className = "mediaInfo";
-
-    const titleElement = document.createElement("h3");
-    titleElement.textContent = media.title;
-
-    const likesCountElement = document.createElement("span");
-    likesCountElement.className = "likes_count";
-    likesCountElement.textContent = `${media.likes}`;
-
-    const likeButton = document.createElement("button");
-    likeButton.className = "like_button";
-    likeButton.innerHTML = "\u2661";
-
-    // Initialize the liked property of each media item to false
-    media.liked = false;
-
-    // Add an event listener to each like button to manage the liking
-    likeButton.addEventListener("click", () => {
-      if (!media.liked) {
-        media.likes++;
-        media.liked = true;
-        likesCountElement.textContent = `${media.likes}`;
-        likeButton.textContent = `\u2665`;
-        likeButton.disabled = true;
-        likeButton.style.opacity = "1";
-        likeButton.classList.add("like_button_active");
-
-        // Increment totalLikes when a media is liked
-        totalLikes++;
-        updateTotalLikes(photographerData);
-      }
-    });
-
-    const filePath = await getMediaFilePath(media);
-
-    if (media.image) {
-      const imageElement = document.createElement("img");
-      imageElement.src = filePath;
-
-      mediaElement.appendChild(imageElement);
-    } else if (media.video) {
-      const videoElement = document.createElement("video");
-      videoElement.src = filePath;
-      videoElement.alt = media.title;
-      videoElement.controls = true;
-
-      mediaElement.appendChild(videoElement);
-    }
-
-    mediaInfo.appendChild(titleElement);
-    mediaInfo.appendChild(likesCountElement);
-
-    // Skip updating the likes count in the .mediaInfo span when the like button is active
-    if (!likeButton.classList.contains("like_button_active")) {
-      mediaInfo.appendChild(likesCountElement);
-    }
-
-    mediaElement.appendChild(mediaInfo);
-    mediaElement.appendChild(likeButton);
-
-    photographerMediaContainer.appendChild(mediaElement);
-  }
-}
-
-/* ################################################################ (* I *) ################################################################ */
-
-// Function to update the media displayed based on the selected sort option
-async function updateSortedMedia(photographerData, sortType) {
-  const photographerMediaContainer =
-    document.getElementById("photographer_media");
-  photographerMediaContainer.innerHTML = "";
-  await displaySortedMedia(photographerData, sortType);
 }
 
 /* ################################################################ *    * ################################################################ */
@@ -494,6 +380,20 @@ function handleEnterKey(event) {
     submitForm(event);
   }
 }
+
+
+const selectSort = document.querySelector('select#sort');
+
+selectSort.addEventListener('change', function() {
+  const option = document.getElementsByTagName("option");
+
+  if (target.value == popularity || target.value == title || target.value == date) {
+    option.style.color = "white";
+    option.style.backgroundColor = "#901c1c";
+  } else {
+    alert("There was an error!");
+  };
+});
 
 /* ################################################################ ** ################################################################ */
 

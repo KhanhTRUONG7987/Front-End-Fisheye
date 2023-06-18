@@ -26,8 +26,8 @@ h1 {
 }
 
 .logo {
-  height: 2em;
-  margin-left: 3em;
+  height: 2.5em;
+  margin-left: 3.5em;
 }
 
 /* ################################################################ */
@@ -50,7 +50,7 @@ a {
 }
 .photographer_section article h2 {
   color: #d3573c;
-  font-size: 1.4em;
+  font-size: 1.8em;
   margin-top: -1em;
 }
 .photographer_section article .p1 {
@@ -58,13 +58,13 @@ a {
   font-size: 1em;
 }
 .photographer_section article .p2 {
-  font-size: 0.65em;
+  font-size: 0.8em;
   color: black;
 }
 .photographer_section article .p3 {
   margin-top: 0.3em;
   color: #757575;
-  font-size: 0.6em;
+  font-size: 0.7em;
 }
 .photographer_section article img {
   max-width: 25em;

@@ -80,13 +80,18 @@ async function getPhotographerNameById(photographerId) {
 async function getMediaFilePath(media) {
   try {
     await getAllPhotographers(); // Wait for photographers data to be fetched
-    const photographerName = await getPhotographerNameById(media.photographerId);
+    const photographerName = await getPhotographerNameById(
+      media.photographerId
+    );
     if (!photographerName) {
       return null;
     }
     const firstName = photographerName.split(" ")[0];
     const fileName = media.image || media.video;
-    const filePath = `assets/photographers/${firstName.replace("-", " ")}/${fileName}`;
+    const filePath = `assets/photographers/${firstName.replace(
+      "-",
+      " "
+    )}/${fileName}`;
     console.log("File path:", filePath);
     return filePath;
   } catch (error) {
@@ -119,6 +124,33 @@ async function calculateTotalLikesByPhotographerId(photographerId) {
   return totalLikes;
 }
 
+async function getFilteredElements(photographerId, type) {
+  const media = await getMediaByPhotographerId(photographerId);
+
+  switch (type) {
+    case "popularity":
+      return media.sort((a, b) => b.likes - a.likes);
+    case "date":
+      return media.sort((a, b) => new Date(b.date) - new Date(a.date));
+    case "title":
+      return media.sort((a, b) => a.title.localeCompare(b.title));
+    default:
+      return media.sort((a, b) => b.likes - a.likes);
+  }
+}
+
+// Function to get media by index
+async function getMediaByIndex(index) {
+  try {
+    const allMedia = await getAllMedia();
+    const media = allMedia.find((m) => m.index === index);
+    return media;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
 export {
   getAllPhotographers,
   getAllMedia,
@@ -129,6 +161,8 @@ export {
   allPhotographers,
   calculateTotalLikes,
   calculateTotalLikesByPhotographerId,
+  getFilteredElements,
+  getMediaByIndex,
 };
 
 // p === foundPhotographer

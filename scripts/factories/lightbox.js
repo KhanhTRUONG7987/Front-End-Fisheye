@@ -1,5 +1,7 @@
+import { getMediaByIndex } from "../pages/api.js";
+
 // Factory function for creating a photographer object
-function lightboxFactory(medias) {
+function lightboxFactory(medias, mediaTitles) {
   let mediaSources = medias;
   let currentImageIndex = 0;
   let lightboxContainer;
@@ -50,12 +52,13 @@ function lightboxFactory(medias) {
     // Check if mediaSources is defined and not empty
     if (mediaSources && mediaSources.length > 0) {
       // Iterate through the mediaSources and create DOM elements for each media
-      mediaSources.forEach((source) => {
+      mediaSources.forEach(async (source, index) => {
+        console.log("source :>> ", source);
         let elementMedia;
 
         if (source.path.includes(".mp4")) {
           elementMedia = document.createElement("video");
-          console.log('elementMedia :>> ', elementMedia);
+          console.log("elementMedia :>> ", elementMedia);
           elementMedia.autoplay = true;
           elementMedia.controls = true;
         } else {
@@ -64,28 +67,21 @@ function lightboxFactory(medias) {
 
         elementMedia.src = source.path;
         elementMedia.className = "lightbox-image";
-        // elementMedia.dataset.mediaId = source.id; // Update the dataset attribute to data-media-id
+        elementMedia.setAttribute("data-media-id", source.id); // Update the dataset attribute to data-media-id
+        console.log(" elementMedia :>> ", elementMedia);
 
-        // TODO: `!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`
+        // Create media title element
+        // const mediaTitle = document.createElement("div");
+        // mediaTitle.textContent = mediaTitles[index]; // Set the title text
+        // mediaTitle.className = "media-title"; // Set the title class
+        // elementMedia.appendChild(mediaTitle); // Append title element to each media
+        // console.log('elementMedia :>> ', elementMedia);
 
-        // Create title for the image
-        const title = document.createElement("div");
-        title.className = "image-title";
-        title.innerText = source.title; // Set the title text
-        console.log('source :>> ', source);
-        console.log('title :>> ', title);
-        elementMedia.appendChild(title); // Append the title to the image element
-        console.log('elementMedia :>> ', elementMedia);
-
-        // TODO: `!!!!!!!!!!!!!!!!!!!!!!!!!!!!!`
-
-        // Append a click event listener to the image element
-        elementMedia.addEventListener("click", () => {
-          openLightbox(source.id, images); // Pass the source ID and images to the openLightbox function
-        });
-
-        lightboxContent.appendChild(elementMedia);
         images.push(elementMedia);
+        
+        console.log('images :>> final', images);
+
+        
       });
     }
 
@@ -154,15 +150,18 @@ function lightboxFactory(medias) {
     }
   }
 
-  // Function to update the lightbox
   function updateCurrentImage() {
     images.forEach((img, index) => {
       if (index === currentImageIndex) {
         img.style.display = "block";
-        img.querySelector(".image-title").style.display = "block";
+        if (img.nextElementSibling) {
+          img.nextElementSibling.style.display = "block";
+        }
       } else {
         img.style.display = "none";
-        img.querySelector(".image-title").style.display = "none";
+        if (img.nextElementSibling) {
+          img.nextElementSibling.style.display = "none";
+        }
       }
     });
   }
@@ -175,7 +174,7 @@ function lightboxFactory(medias) {
   }
 
   // Function to open the lightbox
-  function openLightbox(mediaId, mediaElements) {
+  function openLightbox(mediaId, mediaElements, mediaTitles) {
     console.log("mediaId :>> ", mediaId);
     console.log("mediaElements :>> ", mediaElements);
     if (!mediaElements || mediaElements.length === 0) {
@@ -187,7 +186,7 @@ function lightboxFactory(medias) {
 
     // Find the media element with the matching mediaId
     const clickedMediaElement = Array.from(mediaElements).find((element) => {
-      return element.dataset.mediaId === mediaId;
+      return element.getAttribute("data-media-id") === mediaId;
     });
 
     if (clickedMediaElement) {
@@ -202,8 +201,14 @@ function lightboxFactory(medias) {
       }
 
       // Add all media elements to the lightbox
-      images.forEach((img) => {
-        lightboxContent.appendChild(img);
+      lightboxContent.innerHTML = ""; // Clear existing content
+      images.forEach((img, index) => {
+        const mediaTitle = document.createElement("div");
+        mediaTitle.textContent = mediaTitles[index]; // Set the title text
+        mediaTitle.className = "media-title"; // Set the title class
+        
+        lightboxContent.appendChild(img); // Append img element to lightboxContent
+        lightboxContent.appendChild(mediaTitle); // Append title element to lightboxContent
       });
 
       // Add the current media element to the lightbox
@@ -216,6 +221,8 @@ function lightboxFactory(medias) {
       console.error("Invalid mediaId");
       return;
     }
+
+    
 
     // Add event listener for keydown events
     document.addEventListener("keydown", handleKeydown);
