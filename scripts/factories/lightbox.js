@@ -23,6 +23,7 @@ function lightboxFactory(medias) {
     previousButton.setAttribute("role", "link");
     previousButton.className = "previous";
     previousButton.innerHTML = "&lt;";
+    previousButton.setAttribute("aria-label", "Previous image");
     carouselContainer.appendChild(previousButton);
 
     previousButton.addEventListener("click", showPreviousImage);
@@ -32,6 +33,7 @@ function lightboxFactory(medias) {
     nextButton.setAttribute("role", "link");
     nextButton.className = "next";
     nextButton.innerHTML = "&gt;";
+    nextButton.setAttribute("aria-label", "Next image");
     carouselContainer.appendChild(nextButton);
 
     nextButton.addEventListener("click", showNextImage);
@@ -41,7 +43,7 @@ function lightboxFactory(medias) {
 
     // Create close button
     const closeButton = document.createElement("button");
-    closeButton.setAttribute("aria-label", "Close");
+    closeButton.setAttribute("aria-label", "Close dialog");
     closeButton.className = "lightbox-close";
     closeButton.innerHTML = "&#10005;";
     closeButton.addEventListener("click", closeLightbox);
@@ -195,6 +197,11 @@ function lightboxFactory(medias) {
         const mediaTitle = document.createElement("div");
         mediaTitle.textContent = mediaTitles[index]; // Set the title text
         mediaTitle.className = "media-title"; // Set the title class
+        mediaTitle.setAttribute("aria-label", mediaTitles[index]);
+
+
+      // Add aria-label to img.lightbox-image
+      img.setAttribute("aria-label", mediaTitles[index] + ", closeup view");
 
         lightboxContent.appendChild(img); // Append img element to lightboxContent
         lightboxContent.appendChild(mediaTitle); // Append title element to lightboxContent

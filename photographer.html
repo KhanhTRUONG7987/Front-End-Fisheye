@@ -15,19 +15,16 @@
   <body>
     <header>
       <a href="index.html">
-        <img src="assets/images/logo.png" class="logo" alt="logo"
+        <img src="assets/images/logo.png" class="logo" alt="Fisheye Home page"
       /></a>
     </header>
 
     <!-- Main content section -->
     <main id="main">
-      <!-- Placeholder div for the photographer header -->
-      <!-- <div id="photograph_header"></div> -->
-      <!-- Placeholder div for the photographer media -->
       <div id="photographer_media">
         <div class="dropdown">
           <label for="sort">Trier par :</label>
-          <select id="sort">
+          <select id="sort" aria-label="Order by">
             <option value="popularity">Popularité</option>
             <option value="date">Date</option>
             <option value="title">Titre</option>
@@ -39,22 +36,17 @@
 
     <!-- Lightbox container -->
     <div id="lightbox-wrapper">
-      <!-- <div class="lightbox-content"></div> -->
-
-      <!-- <button class="lightbox-close-button">
-        <img src="assets/icons/close.svg" alt="Close" />
-      </button> -->
     </div>
 
     <!-- Contact modal -->
     <div id="contact_modal">
       <div class="modal">
         <header>
-          <!-- <h2>Contactez-moi</h2> -->
           <img
             class="close-modal"
             src="assets/icons/close.svg"
             alt="photo de photographer"
+            aria-label="Close Contact form"
           />
         </header>
         <form id="form_contact">
@@ -74,12 +66,10 @@
             <label for="message">Votre message</label>
             <textarea id="message" aria-label="Your message"></textarea>
           </div>
-          <button class="submit_button" type="submit">Envoyer</button>
+          <button class="submit_button" type="submit" aria-label="Send">Envoyer</button>
         </form>
       </div>
     </div>
-
-    <!-- <div class="modal-overlay" id="modal_overlay"></div> -->
 
     <!-- Scripts for functionality -->
     <script type="module" src="./scripts/utils/contactForm.js"></script>

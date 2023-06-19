@@ -90,15 +90,9 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     });
 
-  // Get the select element
-var selectElement = document.getElementById("sort");
-
-// Get the options within the select element
-var options = selectElement.options;
-
-// Set the CSS style of the second option (index 1)
-options[1].style.backgroundColor = "yellow";
-options[1].style.color = "red";
+  // Add accessible names to the specified elements
+  document.querySelector("button.contact_button").setAttribute("aria-label", "Contact Me");
+  document.querySelector("select").setAttribute("aria-label", "Order by"); 
 });
 /* ################################################################ ** ################################################################ */
 
@@ -162,6 +156,7 @@ async function createMediaElement(elements) {
       const likeButton = document.createElement("button");
       likeButton.className = "like_button";
       likeButton.innerHTML = "\u2661"; // Use the heart symbol as the like button
+      likeButton.setAttribute("aria-label", "likes");
 
       const rightSection = document.createElement("div");
       rightSection.classList.add("right-section");
@@ -207,6 +202,7 @@ async function createMediaElement(elements) {
       if (media.image) {
         const imageElement = document.createElement("img");
         imageElement.src = await getMediaFilePath(media);
+        imageElement.setAttribute("aria-label", `${media.title}, closeup view`);
 
         mediaElement.appendChild(imageElement);
       } else if (media.video) {
@@ -214,6 +210,7 @@ async function createMediaElement(elements) {
         videoElement.src = await getMediaFilePath(media);
         videoElement.alt = media.title;
         videoElement.controls = true;
+        videoElement.setAttribute("aria-label", `${media.title}, closeup view`);
         console.log("videoElement:", videoElement);
 
         mediaElement.appendChild(videoElement);

@@ -24,7 +24,8 @@ function photographerFactory(data) {
 
     const img = document.createElement("img");
     img.src = picture;
-    img.alt = " " + name;
+    img.alt = name; // Set the accessible name as the photographer's name
+
 
     const h2 = document.createElement("h2");
     h2.textContent = name;
@@ -77,7 +78,7 @@ function photographerFactory(data) {
 
     const img = document.createElement("img");
     img.src = picture;
-    img.alt = " " + name;
+    img.alt = name;
 
     photographerPageHeaderContainer.appendChild(photographerInfo);
     photographerPageHeaderContainer.appendChild(contactButton);

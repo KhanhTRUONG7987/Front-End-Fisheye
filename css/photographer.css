@@ -115,8 +115,11 @@ a {
   margin: 0 3em;
 }
 
-.contact_button:focus {
+.contact_button:hover,
+.contact_button:focus  {
   outline: none;
+  background-color: #DB8876;
+  color: #000000;
 }
 
 .photograph_header img {
