@@ -200,6 +200,8 @@ function lightboxFactory(medias) {
         mediaTitle.textContent = mediaTitles[index]; // Set the title text
         mediaTitle.className = "media-title"; // Set the title class
         mediaTitle.setAttribute("aria-label", mediaTitles[index]);
+        mediaTitle.setAttribute("role", "heading");
+
 
 
       // Add aria-label to img.lightbox-image
