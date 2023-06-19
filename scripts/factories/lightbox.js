@@ -68,6 +68,8 @@ function lightboxFactory(medias) {
         elementMedia.src = source.path;
         elementMedia.className = "lightbox-image";
         elementMedia.setAttribute("data-media-id", source.id); // Update the dataset attribute to data-media-id
+        elementMedia.setAttribute("role", "image");
+        elementMedia.setAttribute("aria-label", source.title + ", closeup view"); // Set accessible label for the image
         console.log(" elementMedia :>> ", elementMedia);
 
         images.push(elementMedia);

@@ -19,12 +19,14 @@ function photographerFactory(data) {
     const link = document.createElement("a");
     link.href = `photographer.html?id=${id}`;
     // ulisiser l'id dans le lien
+    link.setAttribute("role", "link");
 
     const article = document.createElement("article");
 
     const img = document.createElement("img");
     img.src = picture;
     img.alt = name; // Set the accessible name as the photographer's name
+    img.setAttribute("role", "image");
 
 
     const h2 = document.createElement("h2");
@@ -75,10 +77,12 @@ function photographerFactory(data) {
     contactButton.className = "contact_button";
     contactButton.textContent = "Contactez-moi";
     contactButton.addEventListener("click", displayModal);
+    contactButton.setAttribute("role", "button");
 
     const img = document.createElement("img");
     img.src = picture;
     img.alt = name;
+    img.setAttribute("role", "image");
 
     photographerPageHeaderContainer.appendChild(photographerInfo);
     photographerPageHeaderContainer.appendChild(contactButton);

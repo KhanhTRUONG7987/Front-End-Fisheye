@@ -89,10 +89,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
 
     });
-
-  // Add accessible names to the specified elements
-  document.querySelector("button.contact_button").setAttribute("aria-label", "Contact Me");
-  document.querySelector("select").setAttribute("aria-label", "Order by"); 
 });
 /* ################################################################ ** ################################################################ */
 
@@ -361,6 +357,8 @@ if (contactButton) {
     contactModal.classList.add("modal-open");
     body.classList.add("modal-open");
   });
+  contactButton.setAttribute("aria-label", "Contact Me");
+
 } else {
   console.error("Element not found: .contact_button");
 }
@@ -422,6 +420,7 @@ function handleEnterKey(event) {
   }
 }
 
+document.querySelector("select").setAttribute("aria-label", "Order by"); 
 /* ################################################################ ** ################################################################ */
 
 export { displayPagePhotographer };

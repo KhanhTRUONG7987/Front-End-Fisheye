@@ -21,6 +21,10 @@ async function displayData(allPhotographers) {
     const photographerModel = photographerFactory(photographer);
     // Get the DOM element for the photographer's user card
     const userCardDOM = photographerModel.getUserCardDOM();
+
+    // Set accessible roles to the elements
+    userCardDOM.setAttribute("role", "listitem");
+    
     // Append the user card DOM element to the photographers section
     photographersSection.appendChild(userCardDOM);
   });
