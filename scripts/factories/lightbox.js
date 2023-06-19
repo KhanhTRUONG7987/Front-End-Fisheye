@@ -1,7 +1,5 @@
-import { getMediaByIndex } from "../pages/api.js";
-
 // Factory function for creating a photographer object
-function lightboxFactory(medias, mediaTitles) {
+function lightboxFactory(medias) {
   let mediaSources = medias;
   let currentImageIndex = 0;
   let lightboxContainer;
@@ -70,18 +68,9 @@ function lightboxFactory(medias, mediaTitles) {
         elementMedia.setAttribute("data-media-id", source.id); // Update the dataset attribute to data-media-id
         console.log(" elementMedia :>> ", elementMedia);
 
-        // Create media title element
-        // const mediaTitle = document.createElement("div");
-        // mediaTitle.textContent = mediaTitles[index]; // Set the title text
-        // mediaTitle.className = "media-title"; // Set the title class
-        // elementMedia.appendChild(mediaTitle); // Append title element to each media
-        // console.log('elementMedia :>> ', elementMedia);
-
         images.push(elementMedia);
-        
-        console.log('images :>> final', images);
 
-        
+        console.log("images :>> final", images);
       });
     }
 
@@ -206,7 +195,7 @@ function lightboxFactory(medias, mediaTitles) {
         const mediaTitle = document.createElement("div");
         mediaTitle.textContent = mediaTitles[index]; // Set the title text
         mediaTitle.className = "media-title"; // Set the title class
-        
+
         lightboxContent.appendChild(img); // Append img element to lightboxContent
         lightboxContent.appendChild(mediaTitle); // Append title element to lightboxContent
       });
@@ -221,8 +210,6 @@ function lightboxFactory(medias, mediaTitles) {
       console.error("Invalid mediaId");
       return;
     }
-
-    
 
     // Add event listener for keydown events
     document.addEventListener("keydown", handleKeydown);

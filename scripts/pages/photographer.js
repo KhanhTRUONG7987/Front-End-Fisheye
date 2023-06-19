@@ -80,7 +80,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       );
       await createMediaElement(filteredElements);
 
-      likeButton.classList.add("like_button_active");
+      //likeButton.classList.add("like_button_active");
 
 
       // Update the totalLikes variable with the new total likes
