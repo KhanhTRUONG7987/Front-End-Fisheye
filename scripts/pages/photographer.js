@@ -1,7 +1,5 @@
 // Mettre le code JavaScript lié à la page photographer.html
 
-// 1. récupérer l'id du photographe dans la page `photographer.html`
-// à partir des paramètres d'URL de la page
 import lightboxFactory from "../factories/lightbox.js";
 import photographerFactory from "../factories/photographer.js";
 import {
@@ -14,6 +12,7 @@ import closeModal from "../utils/contactForm.js";
 
 /* ################################################################ ** ################################################################ */
 
+// 1. récupérer l'id du photographe dans la page `photographer.html` à partir des paramètres d'URL de la page
 // Function to get the photographer ID from the query parameter in the URL
 export function getPhotographerIdFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -122,6 +121,8 @@ async function createMediaElement(elements) {
   const photographerMediaContainer = document.getElementById("media");
 
   photographerMediaContainer.innerHTML = "";
+
+  mediaSources = [];
 
   if (elements && elements.length > 0) {
     // Loop through each media item
@@ -377,6 +378,13 @@ const closeButton = document.querySelector(".close-modal");
 closeButton.addEventListener("click", closeModal);
 document.addEventListener("keydown", handleEscapeKey);
 
+// Function to handle the Enter key event
+function handleEnterKey(event) {
+  if (event.key === "Enter") {
+    submitForm(event);
+  }
+}
+
 function submitForm(event) {
   event.preventDefault();
 
@@ -410,13 +418,6 @@ document.addEventListener("keydown", handleEnterKey);
 function handleEscapeKey(event) {
   if (event.key === "Escape") {
     closeModal();
-  }
-}
-
-// Function to handle the Enter key event
-function handleEnterKey(event) {
-  if (event.key === "Enter") {
-    submitForm(event);
   }
 }
 

@@ -7,7 +7,7 @@ const photographersApi = "../../data/photographers.json";
 // Variable to store the fetched photographers data
 let allPhotographers = [];
 
-// Function to fetch all photographers' data
+// (0) Function to fetch all photographers' data
 async function getAllPhotographers() {
   try {
     const response = await fetch(photographersApi);
@@ -20,7 +20,7 @@ async function getAllPhotographers() {
   }
 }
 
-// Function to get a photographer by their ID
+// (1) Function to get a photographer by their ID
 async function getPhotographerById(id) {
   try {
     const allPhotographers = await getAllPhotographers();
@@ -36,6 +36,59 @@ async function getPhotographerById(id) {
   }
 }
 
+// (2) Funtion to construct the file path for the media file
+async function getMediaFilePath(media) {
+  try {
+    await getAllPhotographers(); // Wait for photographers data to be fetched
+    const photographerName = await getPhotographerNameById(
+      media.photographerId
+    );
+    if (!photographerName) {
+      return null;
+    }
+    const firstName = photographerName.split(" ")[0];
+    const fileName = media.image || media.video;
+    const filePath = `assets/photographers/${firstName.replace(
+      "-",
+      " "
+    )}/${fileName}`;
+    console.log("File path:", filePath);
+    return filePath;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+// (3) Function to calculate the total likes for a photographer's media
+async function calculateTotalLikesByPhotographerId(photographerId) {
+  const media = await getMediaByPhotographerId(photographerId);
+  let totalLikes = 0;
+
+  media.forEach((item) => {
+    totalLikes += item.likes;
+  });
+
+  return totalLikes;
+}
+
+// (4) Function to get the filtered media using photographer id
+async function getFilteredElements(photographerId, type) {
+  const media = await getMediaByPhotographerId(photographerId);
+
+  switch (type) {
+    case "popularity":
+      return media.sort((a, b) => b.likes - a.likes);
+    case "date":
+      return media.sort((a, b) => new Date(b.date) - new Date(a.date));
+    case "title":
+      return media.sort((a, b) => a.title.localeCompare(b.title));
+    default:
+      return media.sort((a, b) => b.likes - a.likes);
+  }
+}
+
+// ################################################################################################
 // ################################################################################################
 
 // Function to get media (photos or videos) associated with a photographer by their ID
@@ -65,8 +118,6 @@ async function getAllMedia() {
   }
 }
 
-// ################################################################################################
-
 // Function to get the photographer's name by ID
 async function getPhotographerNameById(photographerId) {
   await getAllPhotographers(); // Wait for photographers data to be fetched
@@ -75,31 +126,6 @@ async function getPhotographerNameById(photographerId) {
   );
   return photographerFound ? photographerFound.name : null;
 }
-
-// Funtion to construct the file path for the media file
-async function getMediaFilePath(media) {
-  try {
-    await getAllPhotographers(); // Wait for photographers data to be fetched
-    const photographerName = await getPhotographerNameById(
-      media.photographerId
-    );
-    if (!photographerName) {
-      return null;
-    }
-    const firstName = photographerName.split(" ")[0];
-    const fileName = media.image || media.video;
-    const filePath = `assets/photographers/${firstName.replace(
-      "-",
-      " "
-    )}/${fileName}`;
-    console.log("File path:", filePath);
-    return filePath;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-}
-// ################################################################################################
 
 // Function to get the totalLikes for each photographer
 function calculateTotalLikes(data) {
@@ -110,33 +136,6 @@ function calculateTotalLikes(data) {
   });
 
   return totalLikes;
-}
-
-// Function to calculate the total likes for a photographer's media
-async function calculateTotalLikesByPhotographerId(photographerId) {
-  const media = await getMediaByPhotographerId(photographerId);
-  let totalLikes = 0;
-
-  media.forEach((item) => {
-    totalLikes += item.likes;
-  });
-
-  return totalLikes;
-}
-
-async function getFilteredElements(photographerId, type) {
-  const media = await getMediaByPhotographerId(photographerId);
-
-  switch (type) {
-    case "popularity":
-      return media.sort((a, b) => b.likes - a.likes);
-    case "date":
-      return media.sort((a, b) => new Date(b.date) - new Date(a.date));
-    case "title":
-      return media.sort((a, b) => a.title.localeCompare(b.title));
-    default:
-      return media.sort((a, b) => b.likes - a.likes);
-  }
 }
 
 // Function to get media by index
@@ -150,6 +149,9 @@ async function getMediaByIndex(index) {
     return null;
   }
 }
+
+// ################################################################################################
+// ################################################################################################
 
 export {
   getAllPhotographers,

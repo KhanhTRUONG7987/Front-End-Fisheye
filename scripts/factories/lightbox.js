@@ -202,8 +202,6 @@ function lightboxFactory(medias) {
         mediaTitle.setAttribute("aria-label", mediaTitles[index]);
         mediaTitle.setAttribute("role", "heading");
 
-
-
       // Add aria-label to img.lightbox-image
       img.setAttribute("aria-label", mediaTitles[index] + ", closeup view");
 

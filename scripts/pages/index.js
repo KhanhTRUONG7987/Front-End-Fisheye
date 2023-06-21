@@ -17,9 +17,11 @@ async function displayData(allPhotographers) {
 
   // Loop through each photographer in the provided data
   allPhotographers.forEach((photographer) => {
-    // Create a photographer model using the photographerFactory function
+
+    // (0) Create a photographer model using the photographerFactory function
     const photographerModel = photographerFactory(photographer);
-    // Get the DOM element for the photographer's user card
+
+    // (1) Get the DOM element for the photographer's user card
     const userCardDOM = photographerModel.getUserCardDOM();
 
     // Set accessible roles to the elements
